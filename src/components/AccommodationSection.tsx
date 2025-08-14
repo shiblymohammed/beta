@@ -309,7 +309,7 @@ const AccommodationSection: React.FC = () => {
               class="relative accommodation-swiper"
               init="false"
             >
-              {rooms.map((room, index) => (
+              {rooms.map((room) => (
                 <swiper-slide key={room.id}>
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-16 items-center min-h-[600px]">
                     
@@ -393,7 +393,7 @@ const AccommodationSection: React.FC = () => {
 
             {/* Slide indicators */}
             <div className="flex justify-center mt-12 space-x-2">
-              {rooms.map((room, index) => (
+              {rooms.map((_, index) => (
                 <button
                   key={index}
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
