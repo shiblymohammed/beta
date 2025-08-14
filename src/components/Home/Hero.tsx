@@ -1,23 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Using an inline SVG for the ChevronDown icon to avoid external dependencies
-// and ensure it's always available.
-const ChevronDownIcon = () => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width="24" 
-    height="24" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="1.5" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
-    className="w-6 h-6 text-text-on-color opacity-70"
-  >
-    <polyline points="6 9 12 15 18 9"></polyline>
-  </svg>
-);
+
 
 const Hero: React.FC = () => {
   const [isContentVisible, setContentVisible] = useState(false);

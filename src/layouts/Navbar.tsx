@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // =================================================================
 // == SVG ICONS
@@ -52,7 +52,6 @@ const NavBar: React.FC = () => {
   // --- Dynamic Class Calculation ---
   // Determines the navbar's appearance based on whether the user has scrolled.
   const navBackground = hasScrolled ? 'bg-background-secondary shadow-heritage-lg' : 'bg-transparent';
-  const textColor = hasScrolled ? 'text-text-heading' : 'text-text-on-color';
   const hamburgerColor = hasScrolled ? 'bg-text-heading' : 'bg-text-on-color';
   const logoSrc = hasScrolled ? '/logoBlack.png' : '/logoWhite.png'; // Assuming you have these in /public
 

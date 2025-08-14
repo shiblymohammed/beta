@@ -393,7 +393,7 @@ const AccommodationSection: React.FC = () => {
 
             {/* Slide indicators */}
             <div className="flex justify-center mt-12 space-x-2">
-              {rooms.map((_, index) => (
+              {rooms.map((room, index) => (
                 <button
                   key={index}
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
