@@ -1,10 +1,10 @@
 import Hero from '../components/Home/Hero';
 import Intro from '../components/Home/Intro';
 // import VideoZoomSection from '../components/Home/VideoZoomSection';
-import Accommodation from '../components/Accommodation';
 import DiningSection from '../components/Home/DiningSection'; 
 import ContactSection from '../components/Home/ContactSection';
 import Destinations from '../components/Home/Destinations';
+import AccommodationSection from '../components/AccommodationSection';
 
 const Home = () => {
   return (
@@ -12,7 +12,7 @@ const Home = () => {
       <Hero />
       <Intro />
       {/* <VideoZoomSection /> */}
-        <Accommodation />
+        <AccommodationSection />
         <DiningSection />
         <Destinations />
         <ContactSection />  

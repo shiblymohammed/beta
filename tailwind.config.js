@@ -1,35 +1,6 @@
-// /** @type {import('tailwindcss').Config} */
-// export default {
-//   content: [
-//     "./index.html",
-//     "./src/**/*.{js,ts,jsx,tsx}",
-//   ],
-//   theme: {
-//     extend: {
-//       fontFamily: {
-//         'cinzel': ['Cinzel', 'serif'],
-//         'cormorant': ['Cormorant Garamond', 'serif'],
-//         'playfair': ['Playfair Display', 'serif'],
-//         'poppins': ['Poppins', 'sans-serif'],
-//       },
-//       colors: {
-//         'primary-bg': '#f8f6f3',
-//         'primary-text': '#161c17',
-//         'heritage-bg-primary': '#f8f6f3',
-//         'heritage-bg-secondary': '#514f13',
-//         'text-primary-title': '#514f13',
-//         'button-accent-bg': '#514f13',
-//         'button-accent-hover-bg': '#3a3810',
-//       },
-//     },
-//   },
-//   plugins: [],
-// } 
-
-
-
-
 /** @type {import('tailwindcss').Config} */
+const plugin = require('tailwindcss/plugin');
+
 export default {
   content: [
     "./index.html",
@@ -37,58 +8,108 @@ export default {
   ],
   theme: {
     extend: {
+      // =================================================================
+      // == THEME FOUNDATION: COLORS & FONTS
+      // =================================================================
+      colors: {
+        // --- Semantic Color Palette (v3) ---
+        'background': {
+          DEFAULT: '#FBF9F6',   // Main body background
+          secondary: '#F5F0E6', // For alternating sections or navbar scroll state
+          tertiary: '#EDE8DA',  // For distinct sections or cards
+        },
+        'menu-overlay': '#2C3E50', // Rich, deep indigo for the full-screen menu
+
+        // --- Text ---
+        'text': {
+          DEFAULT: '#435547',   // Default body text
+          heading: '#3A4A3E',   // For main headings
+          subtle: '#5A594D',    // For de-emphasized text
+          'on-color': '#FBF9F6',// For text on dark/colored backgrounds
+        },
+
+        // --- Borders ---
+        'border': {
+          soft: '#DCD7C9',      // Subtle, decorative borders
+          interactive: '#8E8471', // For inputs, etc.
+        },
+
+        // --- Interactive Components ---
+        'action': {
+          primary: '#7A6B5C',
+          'primary-hover': '#5C4E42',
+          accent: '#A57156',
+          'accent-hover': '#9C6A50',
+        },
+      },
       fontFamily: {
         'cinzel': ['Cinzel', 'serif'],
-        'cormorant': ['Cormorant Garamond', 'serif'],
         'playfair': ['Playfair Display', 'serif'],
+        'cormorant': ['Cormorant Garamond', 'serif'],
         'poppins': ['Poppins', 'sans-serif'],
       },
-      colors: {
-        // --- Core Heritage Neutrals (for backgrounds and subtle elements) ---
-        'heritage-bg-primary': '#FBF9F6', // A very light, clean cream - excellent for main body background
-        'heritage-bg-secondary': '#F5F0E6', // A slightly warmer, gentle off-white/light beige for alternating sections
-        'heritage-bg-tertiary': '#EDE8DA', // A deeper, elegant beige for distinct sections or cards
-        'heritage-bg-accent': '#DCD7C9', // A light, warm grey-beige for subtle contrast or footers
 
-        // --- Text Colors ---
-        'text-primary-title': '#3A4A3E', // Deep, sophisticated green/charcoal for main titles (e.g., 'kerala-forest' inspired)
-        'text-secondary-title': '#607C6E', // Muted, earthy green for secondary titles and subheadings
-        'text-description': '#5D5C50',
-        'text-description-2': '#313f35',// Medium dark, slightly warm grey for main descriptions/body text // Medium dark, slightly warm grey for main descriptions/body text
-        'text-description-3': '#435547', // Medium dark, slightly warm grey for main descriptions/body text // Medium dark, slightly warm grey for main descriptions/body text
-        
-        'text-more-description': '#7C7B6F', // Lighter, soft grey for secondary descriptions, captions, or less emphasis text
+      // =================================================================
+      // == TYPOGRAPHIC SYSTEM
+      // =================================================================
+      fontSize: {
+        'xs': '0.75rem', 'sm': '0.875rem', 'base': '1rem', 'lg': '1.125rem', 'xl': '1.25rem',
+        'body': ['1.125rem', { lineHeight: '1.7' }],
+        'h4': ['1.25rem', { lineHeight: '1.4' }],
+        'h3': ['1.75rem', { lineHeight: '1.3' }],
+        'h2': ['2.25rem', { lineHeight: '1.2' }],
+        'h1': ['3rem', { lineHeight: '1.1' }],
+        'h3-sm': ['1.5rem', { lineHeight: '1.3' }],
+        'h2-sm': ['1.875rem', { lineHeight: '1.2' }],
+        'h1-sm': ['2.25rem', { lineHeight: '1.1' }],
+      },
 
-        // --- Border Colors ---
-        'border-soft': '#D9D3C1', // A light, subtle border color for separation
-        'border-accent': '#A09782', // A more pronounced border for interactive elements or highlights
+      // =================================================================
+      // == SPACING, BORDERS, & SHADOWS
+      // =================================================================
+      borderRadius: {
+        'sm': '0.125rem', 'DEFAULT': '0.25rem', 'md': '0.375rem', 'lg': '0.5rem',
+        'xl': '0.75rem', '2xl': '1rem', '3xl': '1.5rem', 'full': '9999px',
+      },
+      boxShadow: {
+        'heritage': '0 4px 14px 0 rgba(220, 215, 201, 0.25)',
+        'heritage-lg': '0 10px 25px 0 rgba(220, 215, 201, 0.35)',
+        'interactive': '0 0 0 3px rgba(165, 113, 86, 0.4)',
+      },
 
-        // --- Button Colors ---
-        // Primary Button
-        'button-primary-bg': '#7A6B5C', // Warm, muted sepia brown for primary action buttons (Muziris-inspired sepia)
-        'button-primary-text': '#FBF9F6', // Text color for primary button
-        'button-primary-hover-bg': '#5C4E42', // Darker sepia for hover state
-        'button-primary-hover-text': '#FBF9F6',// Text color for primary button hover
-
-        // Secondary Button (e.g., outline or lighter action)
-        'button-secondary-bg': 'transparent', // Transparent background for outline button
-        'button-secondary-border': '#7A6B5C', // Border color matching primary background
-        'button-secondary-text': '#7A6B5C', // Text color matching primary background
-        'button-secondary-hover-bg': '#F5F0E6',// Light background on hover
-        'button-secondary-hover-border': '#5C4E42', // Darker border on hover
-        'button-secondary-hover-text': '#5C4E42', // Darker text on hover
-
-        // Accent Button (for specific highlights)
-        'button-accent-bg': '#B07B5F', // A richer, warm terracotta/clay color
-        'button-accent-text': '#FBF9F6', // Text color for accent button
-        'button-accent-hover-bg': '#9C6A50',// Darker terracotta for hover state
-        'button-accent-hover-text': '#FBF9F6', // Text color for accent button hover
+      // =================================================================
+      // == ANIMATION SYSTEM (v3)
+      // =================================================================
+      keyframes: {
+        'fade-in': { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+        'fade-in-up': { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+        'pulse-subtle': { '0%, 100%': { opacity: '1' }, '50%': { opacity: '.7' } },
+        'slide-in-from-left': { '0%': { transform: 'translateX(-100%)' }, '100%': { transform: 'translateX(0)' } },
+        // Renamed for clarity
+        'reveal-stagger': {
+            '0%': { transform: 'translateY(100%)', opacity: '0' },
+            '100%': { transform: 'translateY(0)', opacity: '1' },
+        }
+      },
+      animation: {
+        'fade-in': 'fade-in 0.5s ease-out forwards',
+        'fade-in-up': 'fade-in-up 0.6s ease-out forwards',
+        'pulse-subtle': 'pulse-subtle 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'slide-in-left': 'slide-in-from-left 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
+        'reveal-stagger': 'reveal-stagger 1s ease-out forwards',
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(function({ addBase, theme }) {
+      addBase({
+        'h1': { fontFamily: theme('fontFamily.cinzel'), fontSize: theme('fontSize.h1-sm'), '@screen sm': { fontSize: theme('fontSize.h1') }, color: theme('colors.text.heading'), },
+        'h2': { fontFamily: theme('fontFamily.playfair'), fontSize: theme('fontSize.h2-sm'), '@screen sm': { fontSize: theme('fontSize.h2') }, color: theme('colors.text.heading'), },
+        'h3': { fontFamily: theme('fontFamily.playfair'), fontSize: theme('fontSize.h3-sm'), '@screen sm': { fontSize: theme('fontSize.h3') }, color: theme('colors.text.heading'), },
+        'h4': { fontFamily: theme('fontFamily.playfair'), fontSize: theme('fontSize.h4'), color: theme('colors.text.heading'), },
+        'p': { fontFamily: theme('fontFamily.cormorant'), fontSize: theme('fontSize.body'), color: theme('colors.text.DEFAULT'), },
+        'body': { backgroundColor: theme('colors.background.DEFAULT'), }
+      })
+    })
+  ],
 }
-
-
-
-
