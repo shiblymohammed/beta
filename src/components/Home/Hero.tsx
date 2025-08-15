@@ -4,7 +4,12 @@ import React, { useState, useEffect, useRef } from 'react';
 // == HELPER COMPONENTS & ICONS
 // =================================================================
 
-const ItineraryModal = ({ isOpen, onClose }) => {
+interface ItineraryModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const ItineraryModal: React.FC<ItineraryModalProps> = ({ isOpen, onClose }) => {
   const [interests, setInterests] = useState('');
   const [days, setDays] = useState(3);
   const [itinerary, setItinerary] = useState('');
