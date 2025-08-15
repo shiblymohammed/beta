@@ -15,7 +15,12 @@ interface TimelineEvent {
 // == HELPER COMPONENTS
 // =================================================================
 
-const StoryModal = ({ event, onClose }) => {
+interface StoryModalProps {
+  event: TimelineEvent | null;
+  onClose: () => void;
+}
+
+const StoryModal: React.FC<StoryModalProps> = ({ event, onClose }) => {
     const [story, setStory] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
@@ -69,10 +74,10 @@ const StoryModal = ({ event, onClose }) => {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in" onClick={onClose}>
             <div className="bg-background-secondary rounded-2xl shadow-heritage-lg w-full max-w-2xl max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="p-6 border-b border-border-soft flex justify-between items-center">
-                    <div>
-                        <p className="font-poppins text-sm text-action-accent uppercase">{event.period}</p>
-                        <h3 className="font-playfair text-h3-sm text-text-heading">{event.title}</h3>
-                    </div>
+                                         <div>
+                         <p className="font-poppins text-sm text-action-accent uppercase">{event?.period}</p>
+                         <h3 className="font-playfair text-h3-sm text-text-heading">{event?.title}</h3>
+                     </div>
                     <button onClick={onClose} className="text-text-subtle hover:text-text-heading text-3xl leading-none">&times;</button>
                 </div>
                 <div className="p-8 overflow-y-auto">
@@ -284,7 +289,7 @@ const Intro: React.FC = () => {
                 const opacity = useTransform(cardScrollYProgress, [0, 1], [0, 1]);
                 const scale = useTransform(cardScrollYProgress, [0, 1], [0.85, 1]);
                 const x = useTransform(cardScrollYProgress, [0, 1], [isEven ? -50 : 50, 0]);
-                const imageY = useTransform(cardScrollYProgress, [0, 1], ['-10%', '10%']);
+
 
                 return (
                   <div ref={cardRef} key={event.period} className={`flex items-center w-full ${isEven ? 'justify-start' : 'justify-end'}`}>
@@ -311,7 +316,7 @@ const Intro: React.FC = () => {
                   />
               </div>
               <div className="relative flex flex-col gap-12 ml-12">
-                  {timelineEvents.map((event, index) => {
+                  {timelineEvents.map((event, _index) => {
                       const cardRef = useRef<HTMLDivElement>(null);
                       const { scrollYProgress: cardScrollYProgress } = useScroll({
                           target: cardRef,

@@ -214,7 +214,7 @@ const Hero: React.FC = () => {
             style={{ opacity: Math.max(0, 1 - scrollY / 200) }}
           >
             <p className="font-cormorant text-body text-text-on-color max-w-3xl mx-auto leading-relaxed opacity-90 mb-10">
-              Experience the timeless elegance of colonial Thiruvithamkoor in the heart of Thiruvananthapuram.
+              Experience the timeless elegance of colonial Travancore in the heart of Thiruvananthapuram.
             </p>
             
             <div className={`transition-opacity duration-700 ease-out ${isContentVisible ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '800ms' }}>

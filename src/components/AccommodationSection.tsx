@@ -535,3 +535,8 @@ const AccommodationSection: React.FC = () => {
 };
 
 export default AccommodationSection;
+
+
+
+
+
