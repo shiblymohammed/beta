@@ -1,208 +1,173 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
+// =================================================================
+// == DATA STRUCTURE
+// =================================================================
+interface TimelineEvent {
+  period: string;
+  title: string;
+  description: string;
+  image: string;
+}
+
+// =================================================================
+// == HELPER COMPONENTS
+// =================================================================
+const TimelineCard: React.FC<{ event: TimelineEvent; index: number }> = ({ event, index }) => {
+  const isEven = index % 2 === 0;
+  const cardRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ['start end', 'start center'],
+  });
+  const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const x = useTransform(scrollYProgress, [0, 1], [isEven ? -100 : 100, 0]);
+
+  return (
+    <div
+      ref={cardRef}
+      className={`flex justify-between items-start w-full ${isEven ? 'flex-row-reverse' : ''} relative`}
+    >
+      {/* Make the side columns smaller to widen the center gap */}
+      <div className="hidden lg:w-2/12 lg:flex"></div>
+      <div className="hidden lg:w-2/12 lg:flex justify-center">
+        <div className="w-px h-full bg-border-soft"></div>
+      </div>
+      <motion.div 
+        className="w-full flex justify-center lg:w-8/12"
+        style={{ opacity, x }}
+      >
+        <div className="bg-background-secondary p-8 rounded-2xl shadow-heritage border border-border-soft flex flex-col items-center"
+          style={{
+            width: 'min(100%, 420px)',
+            height: '420px',
+            minWidth: '320px',
+            minHeight: '320px',
+            aspectRatio: '1/1',
+            justifyContent: 'flex-start'
+          }}
+        >
+          <img
+            src={event.image}
+            alt={event.title}
+            className="w-full h-40 object-cover rounded-xl mb-4"
+            style={{ aspectRatio: '1/1', objectFit: 'cover' }}
+            loading="lazy"
+          />
+          <p className="font-poppins text-sm tracking-widest text-action-accent uppercase mb-1">{event.period}</p>
+          <h3 className="font-playfair text-h3-sm text-text-heading mb-2 text-center">{event.title}</h3>
+          <p className="font-cormorant text-text-subtle text-center text-sm overflow-y-auto px-1" style={{ maxHeight: '90px' }}>
+            {event.description}
+            {/* Add more description for context */}
+            {index === 0 && (
+              <>
+                {" "}This residence was a hub of social and cultural gatherings, echoing with stories of the past and the gentle rustle of the surrounding trees. Its architecture stands as a testament to the blend of colonial and local influences, making it a unique landmark in the city.
+              </>
+            )}
+            {index === 1 && (
+              <>
+                {" "}During this period, the bungalow witnessed the golden age of Malayalam cinema, hosting legendary actors and directors. The lively evenings were filled with laughter, music, and the aroma of exquisite Kerala cuisine, making it a cherished memory for many.
+              </>
+            )}
+            {index === 2 && (
+              <>
+                {" "}The restoration was a labor of love, involving skilled artisans and historians. Every detail, from the intricate woodwork to the vintage tiles, was carefully revived, ensuring the spirit of the original home was preserved for future generations.
+              </>
+            )}
+            {index === 3 && (
+              <>
+                {" "}Amritha Heritage now welcomes guests from around the world, offering a blend of old-world charm and modern luxury. The property continues to host cultural events, gourmet experiences, and tranquil retreats, keeping its legacy alive.
+              </>
+            )}
+          </p>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+
+// =================================================================
+// == MAIN COMPONENT
+// =================================================================
 const Intro: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  });
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!sectionRef.current) return;
+  const timelineProgress = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
-      const section = sectionRef.current;
-      const rect = section.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      
-      // Only start calculating when section top reaches the top of viewport
-      if (rect.top <= 0 && rect.bottom > windowHeight) {
-        // How much we've scrolled into this section
-        const scrolledIntoSection = Math.abs(rect.top);
-        const maxScroll = section.offsetHeight - windowHeight;
-        const progress = Math.min(scrolledIntoSection / maxScroll, 1);
-        setScrollProgress(progress);
-      } else if (rect.top > 0) {
-        // Section hasn't reached top yet
-        setScrollProgress(0);
-      } else {
-        // Section has completely passed
-        setScrollProgress(1);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    handleScroll();
-    
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Video appears after 25% scroll and completes at 85%
-  const getVideoProgress = () => {
-    if (scrollProgress < 0.25) return 0;
-    if (scrollProgress > 0.85) return 1;
-    
-    const range = 0.85 - 0.25;
-    return (scrollProgress - 0.25) / range;
-  };
-
-  const videoProgress = getVideoProgress();
-
-  // Video style based on its own progress
-  const getVideoStyle = () => {
-    if (videoProgress <= 0) {
-      return {
-        transform: 'scale(0)',
-        borderRadius: '40px',
-        opacity: 0,
-      };
+  const timelineEvents: TimelineEvent[] = [
+    {
+      period: "Early 1900s",
+      title: "The Essenden Bungalow",
+      description: "Built with unique Travancore colonial architecture, it was the home of Eunice Gomez and T. Shivaramasethu Pillai, surrounded by lush gardens.",
+      image: "https://images.unsplash.com/photo-1568605117036-5fe5e7185743?w=800&h=600&fit=crop&q=80"
+    },
+    {
+      period: "1970s",
+      title: "A Cinematic Golden Era",
+      description: "The bungalow became a favourite hangout for the Malayalam film world. Its Kohinoor Restaurant and 'Dining on the Lawn' became star attractions.",
+      image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop&q=80"
+    },
+    {
+      period: "The Restoration",
+      title: "A Heritage Reborn",
+      description: "A major restoration project brought the building back to its original splendour, preserving its architecture while integrating modern comforts.",
+      image: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800&h=600&fit=crop&q=80"
+    },
+    {
+      period: "Present Day",
+      title: "The Amritha Heritage",
+      description: "Today, it stands as a living monument—a boutique hotel celebrating its colonial charm and cinematic past, with the revived Kohinoor Restaurant.",
+      image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&h=600&fit=crop&q=80"
     }
-
-    // Responsive initial scale based on screen size
-    const getInitialScale = () => {
-      if (typeof window !== 'undefined') {
-        const width = window.innerWidth;
-        if (width < 640) return 0.3; // Mobile: start larger
-        if (width < 1024) return 0.25; // Tablet: medium start
-        return 0.2; // Desktop: smaller start
-      }
-      return 0.2;
-    };
-
-    const initialScale = getInitialScale();
-    const scale = initialScale + (videoProgress * (1 - initialScale));
-    
-    // Responsive border radius
-    const maxRadius = typeof window !== 'undefined' && window.innerWidth < 640 ? 24 : 40;
-    const borderRadius = maxRadius - (videoProgress * maxRadius);
-    const opacity = 0.8 + (videoProgress * 0.2);
-    
-    return {
-      transform: `scale(${scale})`,
-      borderRadius: `${borderRadius}px`,
-      opacity: opacity,
-    };
-  };
-
-  // Text blur starts earlier
-  const getTextStyle = () => {
-    if (scrollProgress < 0.15) {
-      return {
-        filter: 'blur(0px)',
-        transform: 'scale(1)',
-        opacity: 1,
-      };
-    }
-
-    const blurStart = 0.15;
-    const blurEnd = 0.7;
-    const blurProgress = Math.min((scrollProgress - blurStart) / (blurEnd - blurStart), 1);
-    
-    // Responsive blur amount based on screen size
-    const getMaxBlur = () => {
-      if (typeof window !== 'undefined') {
-        const width = window.innerWidth;
-        if (width < 640) return 6; // Mobile: less blur (performance)
-        if (width < 1024) return 7; // Tablet: medium blur
-        return 8; // Desktop: full blur
-      }
-      return 8;
-    };
-
-    const maxBlur = getMaxBlur();
-    const blur = blurProgress * maxBlur;
-    const scale = 1 - (blurProgress * (typeof window !== 'undefined' && window.innerWidth < 640 ? 0.03 : 0.05));
-    const opacity = 1 - (blurProgress * 0.6);
-    
-    return {
-      filter: `blur(${blur}px)`,
-      transform: `scale(${scale})`,
-      opacity: opacity,
-    };
-  };
+  ];
 
   return (
     <section 
       ref={sectionRef}
       data-section="intro" 
-      className="bg-heritage-bg-secondary h-[400vh] relative"
+      className="bg-background py-24 md:py-40"
     >
-      {/* Fixed content container */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
-        
-        {/* Text layer */}
-        <div 
-          className="absolute inset-0 flex items-center justify-center px-4 sm:px-6 md:px-8 lg:px-12 py-8 sm:py-12 md:py-16 lg:py-20 z-10"
-          style={{
-            ...getTextStyle(),
-            transition: 'all 0.1s ease-out',
-          }}
+      <div className="container mx-auto px-6 lg:px-8">
+        <motion.div
+            className="text-center mb-20 md:mb-28"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 1, ease: [0.4, 0, 0.2, 1] }}
         >
-          <div className="max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto text-center">
-            
-            {/* Small label on top */}
-            <div className="text-text-primary-title text-xs sm:text-sm md:text-base lg:text-lg tracking-[0.2em] sm:tracking-[0.25em] md:tracking-[0.3em] font-light mb-6 sm:mb-8 md:mb-12 lg:mb-16 opacity-70 uppercase font-playfair">
-              HERITAGE
-            </div>
-
-            {/* Main Heading */}
-            <h2 className="text-text-primary-title text-2xl sm:text-3xl md:text-4xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-light leading-tight mb-6 sm:mb-8 md:mb-12 lg:mb-16 font-playfair">
-              <div className="mb-1 sm:mb-2 md:mb-4">Step into</div>
-              <div>colonial elegance</div>
-            </h2>
-
-            {/* Description Text */}
-            <p className="text-text-primary-title text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-light leading-relaxed max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-3xl mx-auto opacity-80 font-cormorant">
-              Once known as Essenden Bungalow, this heritage landmark
-              <br className="hidden sm:block" />
-              offers a nostalgic journey through Thiruvananthapuram's glorious past
+            <p className="font-poppins text-sm tracking-[0.2em] text-action-accent uppercase mb-4 font-medium">
+                Our Legacy
             </p>
+            <h2 className="text-h2 font-playfair text-text-heading mb-6 relative inline-block">
+                A Journey Through Time
+                <span className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-0.5 bg-gradient-to-r from-transparent via-action-accent to-transparent"></span>
+            </h2>
+            <p className="text-lg font-cormorant text-text-subtle max-w-3xl mx-auto leading-relaxed mt-8">
+                From a colonial bungalow to a cinematic hub, discover the rich history that shaped Amritha Heritage into the timeless destination it is today.
+            </p>
+        </motion.div>
 
+        <div className="relative">
+          {/* Desktop Timeline */}
+          <div className="hidden lg:block absolute left-1/2 top-0 h-full w-px">
+            <motion.div 
+              className="bg-action-primary h-full origin-top"
+              style={{ scaleY: timelineProgress }}
+            />
+          </div>
+          <div className="relative flex flex-col gap-24">
+            {timelineEvents.map((event, index) => (
+              <TimelineCard key={event.period} event={event} index={index} />
+            ))}
           </div>
         </div>
-
-        {/* Video layer */}
-        {videoProgress > 0 && (
-          <div className="absolute inset-0 flex items-center justify-center z-20">
-            <video
-              className="w-full h-full object-cover border-2 border-text-primary-title"
-
-              style={{
-                ...getVideoStyle(),
-                transition: 'all 0.15s ease-out',
-              }}
-              src="/videos/hero2.webm"
-              autoPlay
-              muted
-              loop
-              playsInline
-            >
-              <source src="/videos/hero2.webm" type="video/webm" />
-            </video>
-
-            {/* Video overlay text */}
-            {videoProgress > 0.1 && videoProgress < 0.6 && (
-              <div 
-                className="absolute inset-0 flex items-center justify-center z-30 px-4 sm:px-6 md:px-8"
-                style={{ 
-                  opacity: Math.max(0, 1 - (videoProgress - 0.1) * 2.5),
-                  transition: 'opacity 0.3s ease-out',
-                }}
-              >
-                <div className="text-center text-heritage-bg-secondary max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg">
-                  <h3 className="text-lg sm:text-xl md:text-3xl lg:text-4xl xl:text-5xl font-normal mb-2 sm:mb-3 md:mb-5 tracking-wide font-playfair">
-                    Discover Amritha Heritage
-                  </h3>
-                  <p className="text-sm sm:text-base md:text-lg lg:text-xl font-light opacity-80 font-cormorant">
-                    Experience colonial opulence in the heart of Kerala
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
       </div>
-
-      {/* Debug info */}
-
     </section>
   );
 };
