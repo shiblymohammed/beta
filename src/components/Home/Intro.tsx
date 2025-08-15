@@ -183,21 +183,21 @@ const Intro: React.FC = () => {
       period: "1970s",
       title: "A Cinematic Golden Era",
       description: "The bungalow became a favourite hangout for the Malayalam film world. Its Kohinoor Restaurant and 'Dining on the Lawn' became star attractions.",
-      image: "./images/Intro/intro2.jpg",
+      image: "./images/Dining/varanda1.jpg",
       highlights: ["Film World Hub", "Kohinoor Restaurant", "Dining on the Lawn"]
     },
     {
       period: "The Restoration",
       title: "A Heritage Reborn",
       description: "A major restoration project brought the building back to its original splendour, preserving its architecture while integrating modern comforts.",
-      image: "./images/Intro/intro2.jpg",
+      image: "./images/Intro/intro4.jpg",
       highlights: ["Meticulous Restoration", "Modern Comforts", "Preserved Architecture"]
     },
     {
       period: "Present Day",
       title: "The Amritha Heritage",
       description: "Today, it stands as a living monument—a boutique hotel celebrating its colonial charm and cinematic past, with the revived Kohinoor Restaurant.",
-      image: "./images/Intro/intro2.jpg",
+      image: "./images/Intro/intro5.webp",
       highlights: ["Boutique Heritage Hotel", "Revived Kohinoor", "A Living Monument"]
     }
   ];

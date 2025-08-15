@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar, Users, MapPin, Phone, Mail, Star, Heart, Camera, Music, Utensils, Gift, Clock, IndianRupee } from 'lucide-react';
 import roomImage from '../../public/images/Accommodation/room (1).webp'
 

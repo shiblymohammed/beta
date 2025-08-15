@@ -8,6 +8,8 @@ const ArrowRightIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
 );
 
+
+
 // =================================================================
 // == DATA STRUCTURES
 // =================================================================
@@ -35,34 +37,33 @@ const ParallaxHero: React.FC = () => {
         target: heroRef,
         offset: ['start start', 'end start'],
     });
-    // Parallax effect for the background image
-    const backgroundY = useTransform(scrollYProgress, [0, 1], ['0%', '20%']);
-    // Opacity fade for the text
-    const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+    const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
+    const textY = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
+    const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
     return (
-        <div ref={heroRef} className="relative h-[60vh] w-full overflow-hidden">
-            <motion.div 
-                className="absolute inset-0 z-0" 
-                style={{ y: backgroundY }}
-            >
+        <div ref={heroRef} className="relative h-[50vh] w-full overflow-hidden">
+            <motion.div className="absolute inset-0 z-0" style={{ scale: imageScale }}>
                 <img
-                    src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1600&h=1200&fit=crop&q=80"
-                    alt="Elegant dining hall with warm lighting"
+                    src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&h=900&fit=crop&q=80"
+                    alt="Elegant dining hall with warm lighting and heritage atmosphere"
                     className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/20"></div>
             </motion.div>
             <motion.div
                 className="relative z-10 h-full flex flex-col justify-center items-center text-center text-text-on-color p-6"
-                style={{ opacity }}
+                style={{ y: textY, opacity }}
             >
                 <p className="font-poppins text-sm tracking-[0.2em] text-action-accent uppercase mb-4 font-medium">
                     Kohinoor Restaurant
                 </p>
-                <h1 className="text-h2 font-playfair drop-shadow-lg">
+                <h1 className="text-h1 font-playfair drop-shadow-lg mb-4">
                     A Culinary Heritage
                 </h1>
+                <p className="font-cormorant text-lg text-text-on-color/90 max-w-2xl leading-relaxed drop-shadow-md">
+                    Experience the finest blend of traditional Kerala cuisine and colonial elegance in our historic dining spaces, where every meal tells a story of heritage and hospitality.
+                </p>
             </motion.div>
         </div>
     );
@@ -96,17 +97,17 @@ const DiningSection: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const signatureDishes: Dish[] = [
-    { id: 1, name: "Chicken Mushroom Varutharathathu", description: "A classic Keralan curry with toasted coconut.", price: "₹420", image: "https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=800&h=600&fit=crop&q=80" },
-    { id: 2, name: "Niagara Chicken", description: "A fiery and tangy dry chicken preparation.", price: "₹380", image: "https://images.unsplash.com/photo-1626082896498-4dc39a7446b6?w=800&h=600&fit=crop&q=80" },
-    { id: 3, name: "Beef Ularthiyathu", description: "Slow-roasted beef with fried coconut slivers.", price: "₹450", image: "https://images.unsplash.com/photo-1615937691194-97dbd3f3dc29?w=800&h=600&fit=crop&q=80" },
-    { id: 4, name: "Meen Pollichathu", description: "Spiced fish wrapped in banana leaf and pan-fried.", price: "₹520", image: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=800&h=600&fit=crop&q=80" },
-    { id: 5, name: "Prawn Mango Curry", description: "A coastal curry balancing sweet and tangy flavors.", price: "₹480", image: "https://images.unsplash.com/photo-1598515598552-42582d3c2633?w=800&h=600&fit=crop&q=80" },
+    { id: 1, name: "Chicken Mushroom Varutharathathu", description: "A classic Keralan curry with toasted coconut.", price: "₹420", image: "./images/Dining/chickenmushroom.jpg" },
+    { id: 2, name: "Niagara Chicken", description: "A fiery and tangy dry chicken preparation.", price: "₹380", image: "./images/Dining/niagrachicken.jpg" },
+    { id: 3, name: "Beef Ularthiyathu", description: "Slow-roasted beef with fried coconut slivers.", price: "₹450", image: "./images/Dining/beefularthiyathu.jpg" },
+    { id: 4, name: "Meen Pollichathu", description: "Spiced fish wrapped in banana leaf and pan-fried.", price: "₹520", image: "./images/Dining/meenpollichathu.jpg" },
+    { id: 5, name: "Prawn Mango Curry", description: "A coastal curry balancing sweet and tangy flavors.", price: "₹480", image: "./images/Dining/prawnmango.jpg" },
   ];
 
   const galleryImages: GalleryImage[] = [
-    { id: 1, src: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&h=800&fit=crop&q=80", label: "The Grand Dining Hall", span: "lg:col-span-2 lg:row-span-2" },
-    { id: 2, src: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&h=800&fit=crop&q=80", label: "The Heritage Kitchen", span: "" },
-    { id: 3, src: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=800&fit=crop&q=80", label: "The Garden Veranda", span: "" },
+    { id: 1, src: "./images/Dining/hall2.jpg", label: "The Grand Dining Hall", span: "lg:col-span-2 lg:row-span-2" },
+    { id: 2, src: "./images/Dining/varanda1.jpg", label: "The Heritage Kitchen", span: "" },
+    { id: 3, src: "./images/Dining/varanda2.jpg", label: "The Garden Veranda", span: "" },
   ];
 
   useEffect(() => {
@@ -116,9 +117,26 @@ const DiningSection: React.FC = () => {
     return () => clearInterval(interval);
   }, [signatureDishes.length]);
 
+  const getCardPosition = (index: number) => {
+    const offset = index - currentIndex;
+    const total = signatureDishes.length;
+    
+    // Handle circular navigation
+    const normalizedOffset = ((offset % total) + total) % total;
+    
+    if (normalizedOffset === 0) return 'center';
+    if (normalizedOffset === 1) return 'right1';
+    if (normalizedOffset === 2) return 'right2';
+    if (normalizedOffset === total - 1) return 'left1';
+    if (normalizedOffset === total - 2) return 'left2';
+    return 'hidden';
+  };
+
   return (
     <div className="bg-background">
+      {/* ======================= PARALLAX HERO SECTION ======================= */}
       <ParallaxHero />
+      
       {/* ======================= SIGNATURE DISHES SLIDER ======================= */}
       <div className="bg-background-secondary py-24 md:py-32 overflow-hidden">
         <div className="container mx-auto px-6 lg:px-8">
@@ -128,80 +146,114 @@ const DiningSection: React.FC = () => {
             description="A curated selection of timeless classics and modern interpretations that define the Kohinoor experience, each telling a story of tradition and flavour."
           />
           
-          <div className="hidden md:flex justify-center items-center h-[500px] relative">
-            <AnimatePresence>
+          {/* Desktop Center-Focused Slider */}
+          <div className="hidden md:flex justify-center items-center h-[750px] relative max-w-8xl mx-auto overflow-hidden">
+            <motion.div
+              className="flex items-center justify-center relative w-full h-full cursor-grab active:cursor-grabbing"
+              drag="x"
+              dragConstraints={{ left: -200, right: 200 }}
+              dragElastic={0.2}
+              onDragEnd={(_, info) => {
+                if (info.offset.x < -150) {
+                  setCurrentIndex((prev) => (prev + 1) % signatureDishes.length);
+                } else if (info.offset.x > 150) {
+                  setCurrentIndex((prev) => (prev - 1 + signatureDishes.length) % signatureDishes.length);
+                }
+              }}
+            >
+              <AnimatePresence>
+                {signatureDishes.map((dish, index) => {
+                  const position = getCardPosition(index);
+                  if (position === 'hidden') return null;
+
+                  const variants = {
+                    hidden: { x: 0, scale: 0.8, opacity: 0, zIndex: 1 },
+                    left2: { x: '-140%', scale: 0.75, opacity: 0.4, zIndex: 2 },
+                    left1: { x: '-70%', scale: 0.85, opacity: 0.7, zIndex: 3 },
+                    center: { x: 0, scale: 1.15, opacity: 1, zIndex: 4 },
+                    right1: { x: '70%', scale: 0.85, opacity: 0.7, zIndex: 3 },
+                    right2: { x: '140%', scale: 0.75, opacity: 0.4, zIndex: 2 },
+                  };
+
+                  return (
+                    <motion.div
+                      key={dish.id}
+                      variants={variants}
+                      initial="hidden"
+                      animate={position}
+                      exit="hidden"
+                      transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+                      className="absolute w-[550px] cursor-pointer"
+                      onClick={() => setCurrentIndex(index)}
+                      whileHover={{ scale: position === 'center' ? 1.18 : 1.05 }}
+                    >
+                      <div className="bg-background-tertiary rounded-3xl shadow-heritage-lg border border-border-soft p-10 flex flex-col items-center text-center">
+                        <div className="w-72 h-72 rounded-full overflow-hidden -mt-28 border-8 border-background shadow-2xl">
+                          <img src={dish.image} alt={dish.name} className="w-full h-full object-cover" />
+                        </div>
+                        <h3 className="font-playfair text-h2 text-text-heading mt-10">{dish.name}</h3>
+                        <p className="font-cormorant text-text-subtle my-6 text-lg flex-grow leading-relaxed max-w-md">{dish.description}</p>
+                        <span className="font-poppins font-semibold text-action-accent text-2xl my-4">{dish.price}</span>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </motion.div>
+          </div>
+
+          {/* Mobile Swipeable Slider */}
+          <div className="md:hidden relative h-[450px] overflow-hidden">
+            {/* Mobile Card Stack with Preview */}
+            <div className="relative h-full flex items-center justify-center">
               {signatureDishes.map((dish, index) => {
-                const offset = index - currentIndex;
-                const total = signatureDishes.length;
-                let position = 'hidden';
-
-                if (offset === 0) position = 'center';
-                else if (offset === 1 || offset === -(total - 1)) position = 'right';
-                else if (offset === -1 || offset === total - 1) position = 'left';
-
-                if (position === 'hidden') return null;
-
-                const variants = {
-                  hidden: { x: 0, scale: 0.8, opacity: 0, zIndex: 1 },
-                  left: { x: '-50%', scale: 0.95, opacity: 0.5, zIndex: 2 },
-                  center: { x: 0, scale: 1.05, opacity: 1, zIndex: 3 },
-                  right: { x: '50%', scale: 0.95, opacity: 0.5, zIndex: 2 },
+                const isCurrent = index === currentIndex;
+                const isNext = index === (currentIndex + 1) % signatureDishes.length;
+                const isPrev = index === (currentIndex - 1 + signatureDishes.length) % signatureDishes.length;
+                
+                if (!isCurrent && !isNext && !isPrev) return null;
+                
+                const getCardStyle = () => {
+                  if (isCurrent) return 'z-20 scale-100 opacity-100';
+                  if (isNext) return 'z-10 scale-90 opacity-60 -translate-x-8';
+                  if (isPrev) return 'z-10 scale-90 opacity-60 translate-x-8';
+                  return 'z-0 scale-75 opacity-0';
                 };
-
+                
                 return (
                   <motion.div
                     key={dish.id}
-                    variants={variants}
-                    initial="hidden"
-                    animate={position}
-                    exit="hidden"
-                    transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
-                    className="absolute w-[350px]"
+                    className={`absolute ${getCardStyle()} transition-all duration-500 ease-out cursor-pointer`}
+                    onClick={() => setCurrentIndex(index)}
+                    whileHover={{ scale: isCurrent ? 1.02 : 0.95 }}
                   >
-                    <div className="bg-background-tertiary rounded-2xl shadow-heritage-lg border border-border-soft p-6 flex flex-col items-center text-center">
-                      <div className="w-48 h-48 rounded-full overflow-hidden -mt-20 border-4 border-background shadow-lg">
+                    <div className="bg-background-tertiary rounded-2xl shadow-heritage-lg border border-border-soft p-6 flex flex-col items-center text-center w-72 h-80">
+                      <div className="w-48 h-48 rounded-full overflow-hidden -mt-16 border-6 border-background shadow-xl">
                         <img src={dish.image} alt={dish.name} className="w-full h-full object-cover" />
                       </div>
-                      <h3 className="font-playfair text-h4 text-text-heading mt-6">{dish.name}</h3>
-                      <p className="font-cormorant text-text-subtle my-3 text-sm flex-grow">{dish.description}</p>
-                      <span className="font-poppins font-semibold text-action-accent text-lg my-2">{dish.price}</span>
-                       <button className="font-poppins text-sm font-medium bg-action-primary text-text-on-color px-6 py-2 rounded-lg mt-2 hover:bg-action-primary-hover transition-colors">Order Now</button>
+                      <h3 className="font-playfair text-xl text-text-heading mt-6">{dish.name}</h3>
+                      <p className="font-cormorant text-text-subtle my-4 text-sm flex-grow leading-relaxed line-clamp-3">{dish.description}</p>
+                      <span className="font-poppins font-semibold text-action-accent text-lg my-3">{dish.price}</span>
                     </div>
                   </motion.div>
                 );
               })}
-            </AnimatePresence>
-          </div>
-
-          {/* Mobile Swipeable Slider */}
-          <div className="md:hidden relative h-[450px]">
-            <AnimatePresence>
-              <motion.div
-                key={currentIndex}
-                className="absolute inset-0 cursor-grab active:cursor-grabbing"
-                initial={{ x: '100%', opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: '-100%', opacity: 0 }}
-                transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.3}
-                onDragEnd={(_, info) => {
-                  if (info.offset.x < -100) setCurrentIndex((p) => (p + 1) % signatureDishes.length);
-                  if (info.offset.x > 100) setCurrentIndex((p) => (p - 1 + signatureDishes.length) % signatureDishes.length);
-                }}
-              >
-                <div className="bg-background-tertiary rounded-2xl shadow-heritage-lg border border-border-soft p-6 flex flex-col items-center text-center h-full">
-                  <div className="w-48 h-48 rounded-full overflow-hidden -mt-16 border-4 border-background shadow-lg">
-                    <img src={signatureDishes[currentIndex].image} alt={signatureDishes[currentIndex].name} className="w-full h-full object-cover" />
-                  </div>
-                  <h3 className="font-playfair text-h4 text-text-heading mt-6">{signatureDishes[currentIndex].name}</h3>
-                  <p className="font-cormorant text-text-subtle my-3 text-sm flex-grow">{signatureDishes[currentIndex].description}</p>
-                  <span className="font-poppins font-semibold text-action-accent text-lg my-2">{signatureDishes[currentIndex].price}</span>
-                  <button className="font-poppins text-sm font-medium bg-action-primary text-text-on-color px-6 py-2 rounded-lg mt-2 hover:bg-action-primary-hover transition-colors">Order Now</button>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+            </div>
+            
+            {/* Mobile Navigation Dots */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+              {signatureDishes.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentIndex(index)}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    index === currentIndex 
+                      ? 'bg-action-accent w-6' 
+                      : 'bg-action-accent/30'
+                  }`}
+                />
+              ))}
+            </div>
           </div>
 
           <div className="text-center mt-16">
@@ -252,3 +304,20 @@ const DiningSection: React.FC = () => {
 };
 
 export default DiningSection;
+
+// Add CSS for line-clamp utility
+const styles = `
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+`;
+
+// Inject styles
+if (typeof document !== 'undefined') {
+  const styleSheet = document.createElement('style');
+  styleSheet.textContent = styles;
+  document.head.appendChild(styleSheet);
+}

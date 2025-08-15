@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 // =================================================================
 // == PREMIUM STANDARD ICONS WITH ENHANCED STYLING
@@ -105,7 +106,14 @@ const AccommodationSection: React.FC = () => {
   const headerRef = useRef<HTMLDivElement>(null);
   const mainSwiperRef = useRef<any>(null);
   const [isSwiperReady, setSwiperReady] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
+  
+  // Parallax scroll tracking
+  const heroRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  });
+
 
   // Enhanced room data with more details
   const rooms: Room[] = [
@@ -251,7 +259,7 @@ const AccommodationSection: React.FC = () => {
         },
                  on: {
            slideChange: function(this: any) {
-             setCurrentSlide(this.activeIndex);
+             // Slide change handled by swiper
            }
          }
       });
@@ -262,6 +270,39 @@ const AccommodationSection: React.FC = () => {
 
   return (
     <section className="relative bg-background overflow-hidden">
+      {/* ======================= PARALLAX HERO SECTION ======================= */}
+      <div ref={heroRef} className="relative h-[60vh] w-full overflow-hidden">
+        <motion.div 
+          className="absolute inset-0 z-0"
+          style={{
+            y: useTransform(scrollYProgress, [0, 1], [0, -200])
+          }}
+        >
+          <img
+            src="./images/Accommodation/room (1).webp"
+            alt="Luxury heritage accommodation with colonial architecture"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20"></div>
+        </motion.div>
+        <motion.div
+          className="relative z-10 h-full flex flex-col justify-center items-center text-center text-white p-6"
+          style={{
+            y: useTransform(scrollYProgress, [0, 1], [0, 100])
+          }}
+        >
+          <p className="font-poppins text-sm tracking-[0.2em] text-action-accent uppercase mb-4 font-medium drop-shadow-lg">
+            Our Rooms
+          </p>
+          <h1 className="text-h1 font-playfair drop-shadow-lg mb-4">
+            Stay in Comfort
+          </h1>
+          <p className="font-cormorant text-lg text-white/90 max-w-2xl leading-relaxed drop-shadow-md">
+            Discover comfort and tranquility in our welcoming heritage rooms—your peaceful retreat awaits.
+          </p>
+        </motion.div>
+      </div>
+      
       {/* Decorative background pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-20 left-10 w-64 h-64 bg-action-accent rounded-full mix-blend-multiply filter blur-3xl"></div>
