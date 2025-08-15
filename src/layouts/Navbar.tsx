@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 // =================================================================
 // == SVG ICONS
 // =================================================================
-// Self-contained SVG icons for social links in the menu.
 const InstagramIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
 );
@@ -15,31 +14,101 @@ const TwitterIcon = () => (
 );
 
 // =================================================================
+// == GEMINI API HELPER COMPONENT
+// =================================================================
+const MenuHighlight = () => {
+    const [highlight, setHighlight] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchHighlight = async () => {
+            setIsLoading(true);
+            const prompt = "You are the head chef at Kohinoor, a fine dining restaurant in a luxury heritage resort in Kerala. Write a single, tantalizing sentence describing tonight's must-try signature dish. Be evocative and use sensory details. For example: 'Tonight, I recommend the Meen Pollichathu, where pearl spot fish is steamed in banana leaves with a secret masala, creating an aroma of coastal tradition.'";
+
+            try {
+                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // API key is handled by the environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error("API request failed");
+
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (text) {
+                    setHighlight(text.trim());
+                } else {
+                    setHighlight("Discover a taste of heritage, crafted with passion.");
+                }
+            } catch (error) {
+                console.error("Error fetching menu highlight:", error);
+                setHighlight("Discover a taste of heritage, crafted with passion.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchHighlight();
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center gap-2 mt-2">
+                <div className="w-4 h-4 border-2 border-t-transparent border-text-on-color/50 rounded-full animate-spin"></div>
+                <p className="font-cormorant text-sm text-text-on-color/70 italic">Asking the chef...</p>
+            </div>
+        );
+    }
+
+    return (
+        <p className="font-cormorant text-sm text-text-on-color/70 italic mt-2 max-w-xs text-center lg:text-left">
+            "{highlight}"
+        </p>
+    );
+};
+
+
+// =================================================================
 // == MAIN COMPONENT
 // =================================================================
 const NavBar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [isNavVisible, setIsNavVisible] = useState(true);
+  const lastScrollY = useRef(0);
 
   // Effect to handle scroll-based style changes for the navbar.
   useEffect(() => {
     const handleScroll = () => {
-      // Set state to true if user has scrolled more than 50px.
-      setHasScrolled(window.scrollY > 50);
+      const currentScrollY = window.scrollY;
+      setHasScrolled(currentScrollY > 50);
+
+      // Auto-hide logic
+      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+        // Scrolling down
+        setIsNavVisible(false);
+      } else {
+        // Scrolling up
+        setIsNavVisible(true);
+      }
+      lastScrollY.current = currentScrollY;
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
-    // Check initial scroll position on mount.
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   
   // Effect to prevent body scroll when the full-screen menu is open.
   useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+    document.body.style.overflow = isMenuOpen ? 'hidden' : 'unset';
     return () => {
       document.body.style.overflow = 'unset';
     };
@@ -49,28 +118,24 @@ const NavBar: React.FC = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // --- Dynamic Class Calculation ---
-  // Determines the navbar's appearance based on whether the user has scrolled.
-  const navBackground = hasScrolled ? 'bg-background-secondary shadow-heritage-lg' : 'bg-transparent';
-  const hamburgerColor = hasScrolled ? 'bg-text-heading' : 'bg-text-on-color';
-  const logoSrc = hasScrolled ? '/logoBlack.png' : '/logoWhite.png'; // Assuming you have these in /public
+  const navBackground = hasScrolled ? 'bg-background-secondary/95 backdrop-blur-sm shadow-heritage-lg' : 'bg-transparent';
+  const hamburgerColor = hasScrolled && !isMenuOpen ? 'bg-text-heading' : 'bg-text-on-color';
+  const logoSrc = hasScrolled ? '/logoBlack.png' : '/logoWhite.png';
 
   const navLinks = [
     { name: "Home", href: "#" },
     { name: "Heritage Rooms", href: "#" },
-    { name: "Kohinoor Dining", href: "#" },
-    { name: "Architecture", href: "#" },
+    { name: "Kohinoor Dining", href: "#", hasHighlight: true },
+    { name: "Our Legacy", href: "#" },
     { name: "Contact", href: "#" },
   ];
 
   return (
     <>
-      {/* ======================= NAVIGATION BAR ======================= */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${navBackground}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${navBackground} ${isNavVisible ? 'translate-y-0' : '-translate-y-full'}`}>
         <div className="container mx-auto px-6 lg:px-8">
           <div className="relative flex items-center justify-between h-20 md:h-24">
             
-            {/* Hamburger Menu Button (Left) */}
             <button
               onClick={toggleMenu}
               className={`relative z-50 w-8 h-8 flex flex-col justify-center items-center transition-transform duration-300 ease-out group ${isMenuOpen ? 'transform rotate-180' : ''}`}
@@ -80,7 +145,6 @@ const NavBar: React.FC = () => {
               <span className={`block absolute h-0.5 w-full transition-all duration-300 ease-out ${isMenuOpen ? 'bg-text-on-color -rotate-45' : hamburgerColor + ' translate-y-1.5'}`}></span>
             </button>
 
-            {/* Logo (Center) */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
               <a href="#" aria-label="Go to Homepage">
                 <img 
@@ -92,7 +156,6 @@ const NavBar: React.FC = () => {
               </a>
             </div>
 
-            {/* Book Now Button (Right) */}
             <a 
                 href="#"
                 className={`font-poppins text-sm font-medium px-6 py-2.5 rounded-lg transition-all duration-300 ease-out whitespace-nowrap hidden sm:block
@@ -107,33 +170,37 @@ const NavBar: React.FC = () => {
         </div>
       </nav>
 
-      {/* ======================= FULL-SCREEN MENU OVERLAY ======================= */}
       <div
-        className={`fixed inset-0 z-40 w-full h-full bg-menu-overlay transition-transform duration-700 ease-in-out ${isMenuOpen ? 'transform translate-y-0' : 'transform -translate-y-full'}`}
+        className={`fixed inset-0 z-40 w-full h-full bg-menu-overlay bg-[url('https://www.transparenttextures.com/patterns/damask.png')] bg-repeat transition-transform duration-700 ease-in-out ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}
       >
-        <div className="container mx-auto px-6 lg:px-8 h-full flex flex-col justify-center items-center text-center">
+        <div className="container mx-auto px-6 lg:px-8 h-full grid grid-cols-1 lg:grid-cols-2 items-center">
           
-          {/* Navigation Links with Staggered Animation */}
-          <nav className="flex flex-col items-center space-y-4">
+          <nav className="flex flex-col items-center lg:items-start">
             {navLinks.map((link, index) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className={`font-playfair text-4xl md:text-6xl text-text-on-color transition-all duration-500 ease-out hover:text-white hover:tracking-widest ${isMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-                style={{ transitionDelay: `${150 * (index + 1)}ms` }}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {link.name}
-              </a>
+              <div key={link.name} className="flex flex-col items-center lg:items-start my-2">
+                <a
+                  href={link.href}
+                  className={`font-playfair text-4xl md:text-6xl text-text-on-color transition-all duration-500 ease-out hover:text-white hover:tracking-widest ${isMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+                  style={{ transitionDelay: `${150 * (index + 1)}ms` }}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {link.name}
+                </a>
+                {link.hasHighlight && isMenuOpen && (
+                    <div className={`transition-all duration-500 ease-out ${isMenuOpen ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: `${150 * (index + 2)}ms` }}>
+                        <MenuHighlight />
+                    </div>
+                )}
+              </div>
             ))}
           </nav>
 
-          {/* Decorative Elements in Menu */}
-          <div 
-            className={`absolute bottom-12 left-0 right-0 transition-opacity duration-500 ease-out ${isMenuOpen ? 'opacity-100' : 'opacity-0'}`}
-            style={{ transitionDelay: '800ms' }}
-          >
-            <div className="w-24 h-px bg-text-on-color/20 mx-auto mb-6"></div>
+          <div className={`hidden lg:flex flex-col items-start text-left transition-opacity duration-500 ease-out ${isMenuOpen ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '600ms' }}>
+            <h3 className="font-playfair text-h3 text-text-on-color/90 mb-4">About Amritha</h3>
+            <p className="font-cormorant text-text-on-color/70 leading-relaxed max-w-md mb-8">
+              Once known as Essenden Bungalow, our heritage landmark offers a nostalgic journey through Thiruvananthapuram's glorious past, blending colonial elegance with modern luxury.
+            </p>
+            <div className="w-24 h-px bg-text-on-color/20 mb-6"></div>
             <div className="flex justify-center space-x-6 text-text-on-color/70">
               <a href="#" className="hover:text-white transition-colors"><InstagramIcon /></a>
               <a href="#" className="hover:text-white transition-colors"><FacebookIcon /></a>

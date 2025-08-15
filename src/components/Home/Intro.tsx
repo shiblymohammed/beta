@@ -216,25 +216,26 @@ const Intro: React.FC = () => {
       period: "Early 1900s",
       title: "The Essenden Bungalow",
       description: "Built with unique Travancore colonial architecture, it was the home of Eunice Gomez and T. Shivaramasethu Pillai, surrounded by lush gardens.",
-      image: "https://images.unsplash.com/photo-1568605117036-5fe5e7185743?w=800&h=600&fit=crop&q=80"
+      image: "./images/Intro/intro2.jpg"
     },
     {
       period: "1970s",
       title: "A Cinematic Golden Era",
       description: "The bungalow became a favourite hangout for the Malayalam film world. Its Kohinoor Restaurant and 'Dining on the Lawn' became star attractions.",
-      image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop&q=80"
+      image: "./images/Intro/intro2.jpg"
+
     },
     {
       period: "The Restoration",
       title: "A Heritage Reborn",
       description: "A major restoration project brought the building back to its original splendour, preserving its architecture while integrating modern comforts.",
-      image: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800&h=600&fit=crop&q=80"
+      image: "./images/Intro/intro2.jpg"
     },
     {
       period: "Present Day",
       title: "The Amritha Heritage",
       description: "Today, it stands as a living monument—a boutique hotel celebrating its colonial charm and cinematic past, with the revived Kohinoor Restaurant.",
-      image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&h=600&fit=crop&q=80"
+      image: "./images/Intro/intro2.jpg"
     }
   ];
 
