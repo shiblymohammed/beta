@@ -294,49 +294,106 @@ const AccommodationSection: React.FC = () => {
 
         {/* Enhanced Main Room Slider */}
         {isSwiperReady ? (
-          <div className={`transition-all duration-1200 ease-out delay-300 ${
+          <div className={`transition-all duration-1200 ease-out delay-500 ${
             isHeaderVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}>
-            <swiper-container
-              ref={mainSwiperRef}
-              navigation="true"
-              pagination="true"
-              space-between="60"
-              slides-per-view="1"
-              loop="true"
-              autoplay-delay="8000"
-              autoplay-disable-on-interaction="false"
-              class="relative accommodation-swiper"
-              init="false"
-            >
+                                                   <swiper-container
+                ref={mainSwiperRef}
+                navigation="true"
+                pagination="true"
+                space-between="60"
+                slides-per-view="1"
+                loop="true"
+                autoplay-delay="8000"
+                autoplay-disable-on-interaction="false"
+                class="relative accommodation-swiper"
+                init="false"
+                speed="600"
+                resistance="true"
+                resistance-ratio="0.85"
+                watch-slides-progress="true"
+                preload-images="false"
+                lazy="true"
+                mousewheel="true"
+                keyboard="true"
+                grab-cursor="true"
+              >
               {rooms.map((room) => (
                 <swiper-slide key={room.id}>
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-16 items-center min-h-[600px]">
+                                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 xl:gap-16 items-center min-h-[400px] lg:min-h-[600px]">
                     
-                    {/* Enhanced Image Slider */}
-                    <div className="lg:col-span-7 relative">
-                      <div className="relative h-[450px] sm:h-[550px] md:h-[650px] rounded-3xl overflow-hidden shadow-heritage-lg">
-                        <swiper-container
-                          class="w-full h-full"
-                          effect="fade"
-                                                     autoplay-delay="6000"
-                          autoplay-disable-on-interaction="false"
-                          pagination="true"
-                          loop="true"
-                          init="true"
-                        >
-                          {room.images.map((img, idx) => (
-                            <swiper-slide key={idx}>
-                              <div className="relative w-full h-full overflow-hidden">
-                                <img 
-                                  src={img} 
-                                  alt={`${room.title} view ${idx + 1}`} 
-                                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-110" 
-                                />
-                              </div>
-                            </swiper-slide>
-                          ))}
-                        </swiper-container>                                                 {/* Room type badge */}
+                                         {/* Enhanced Image Slider */}
+                     <div className="lg:col-span-7 relative">
+                       <div className="relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[650px] rounded-2xl lg:rounded-3xl overflow-hidden shadow-heritage-lg lg:shadow-heritage-lg">
+                                                   {/* Mobile Border Gradient Overlay */}
+                          <div className="lg:hidden absolute inset-0 rounded-2xl p-[2px] bg-gradient-to-br from-action-primary via-action-accent to-text-heading">
+                            <div className="relative h-full w-full rounded-2xl overflow-hidden">
+                              <swiper-container
+                                class="w-full h-full cursor-grab active:cursor-grabbing"
+                                effect="slide"
+                                autoplay-delay="6000"
+                                autoplay-disable-on-interaction="false"
+                                pagination="true"
+                                loop="true"
+                                grab-cursor="true"
+                                resistance="true"
+                                resistance-ratio="0.85"
+                                speed="600"
+                                mousewheel="true"
+                                keyboard="true"
+                                init="true"
+                              >
+                                {room.images.map((img, idx) => (
+                                  <swiper-slide key={idx}>
+                                    <div className="relative w-full h-full overflow-hidden">
+                                      <img 
+                                        src={img} 
+                                        alt={`${room.title} view ${idx + 1}`} 
+                                        className="w-full h-full object-cover transition-transform duration-300" 
+                                        draggable="false"
+                                      />
+                                    </div>
+                                  </swiper-slide>
+                                ))}
+                              </swiper-container>
+                              
+                              
+                            </div>
+                          </div>
+                         
+                                                   {/* Desktop Original View */}
+                          <div className="hidden lg:block relative h-full w-full">
+                            <swiper-container
+                              class="w-full h-full cursor-grab active:cursor-grabbing"
+                              effect="slide"
+                              autoplay-delay="6000"
+                              autoplay-disable-on-interaction="false"
+                              pagination="true"
+                              loop="true"
+                              grab-cursor="true"
+                              resistance="true"
+                              resistance-ratio="0.85"
+                              speed="600"
+                              mousewheel="true"
+                              keyboard="true"
+                              init="true"
+                            >
+                              {room.images.map((img, idx) => (
+                                <swiper-slide key={idx}>
+                                  <div className="relative w-full h-full overflow-hidden">
+                                    <img 
+                                      src={img} 
+                                      alt={`${room.title} view ${idx + 1}`} 
+                                      className="w-full h-full object-cover transition-transform duration-300" 
+                                      draggable="false"
+                                    />
+                                  </div>
+                                </swiper-slide>
+                              ))}
+                            </swiper-container>
+                          </div>
+                        
+                        {/* Room type badge */}
                          <div className="absolute top-6 left-6 z-20 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg">
                            <p className="font-poppins text-xs tracking-wider text-action-accent uppercase font-semibold">
                              {room.type}
@@ -344,47 +401,59 @@ const AccommodationSection: React.FC = () => {
                          </div>
 
                          {/* Size indicator */}
-                         <div className="absolute bottom-6 right-6 z-20 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg">
-                           <p className="font-poppins text-sm text-text font-medium">
-                             {room.size}
-                           </p>
-                         </div>
+
                       </div>
                     </div>
 
-                    {/* Enhanced Content */}
-                    <div className="lg:col-span-5 space-y-8">
-                      <div>
-                        <h3 className="text-h3 font-playfair text-text-heading mb-4 transition-colors duration-300">
-                          {room.title}
-                        </h3>
-                        <p className="text-body font-cormorant text-text leading-relaxed mb-6">
-                          {room.description}
-                        </p>
-                      </div>
+                                         {/* Enhanced Content */}
+                     <div className="lg:col-span-5 space-y-4 lg:space-y-8">
+                       <div>
+                         <h3 className="text-xl lg:text-h3 font-playfair text-text-heading mb-2 lg:mb-4 transition-colors duration-300">
+                           {room.title}
+                         </h3>
+                         <p className="text-xs lg:text-body font-cormorant text-text leading-relaxed mb-3 lg:mb-6">
+                           {room.description}
+                         </p>
+                       </div>
 
                                              {/* Room features */}
-                       <div className="grid grid-cols-2 gap-4">
+                       <div className="grid grid-cols-2 gap-2 lg:gap-4">
                          {room.features.map((feature, idx) => (
-                           <div key={idx} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                             <div className="w-2 h-2 bg-action-accent rounded-full flex-shrink-0"></div>
-                             <span className="font-cormorant text-sm text-text">{feature}</span>
+                           <div key={idx} className="flex items-center space-x-2 lg:space-x-3 p-1.5 lg:p-3 bg-gray-50 rounded-lg">
+                             <div className="w-1 lg:w-2 h-1 lg:h-2 bg-action-accent rounded-full flex-shrink-0"></div>
+                             <span className="font-cormorant text-xs lg:text-sm text-text">{feature}</span>
                            </div>
                          ))}
                        </div>
 
-                       {/* Action buttons */}
-                       <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                         <button className="group font-poppins bg-action-primary text-white px-8 py-4 rounded-xl text-base font-semibold transition-all duration-300 transform hover:bg-action-primary-hover hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-accent active:scale-95 flex items-center justify-center">
-                           View Details
-                           <svg className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                           </svg>
-                         </button>
-                         <button className="font-poppins bg-transparent border-2 border-action-primary text-action-primary px-8 py-4 rounded-xl text-base font-semibold transition-all duration-300 hover:bg-action-primary hover:border-action-primary hover:text-white hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-accent active:scale-95">
-                           Check Availability
-                         </button>
-                       </div>
+                      {/* Action buttons */}
+                      <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                                                 {/* Mobile View - Smaller Buttons */}
+                         <div className="lg:hidden flex flex-col gap-2">
+                           <button className="group font-poppins bg-action-primary text-white px-4 py-2.5 rounded-lg text-xs font-medium transition-all duration-300 transform hover:bg-action-primary-hover hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-accent active:scale-95 flex items-center justify-center">
+                             View Details
+                             <svg className="w-3 h-3 ml-1.5 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                             </svg>
+                           </button>
+                           <button className="font-poppins bg-transparent border-2 border-action-primary text-action-primary px-4 py-2.5 rounded-lg text-xs font-medium transition-all duration-300 hover:bg-action-primary hover:border-action-primary hover:text-white hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-accent active:scale-95">
+                             Check Availability
+                           </button>
+                         </div>
+                        
+                        {/* Desktop View - Original Buttons */}
+                        <div className="hidden lg:flex flex-col sm:flex-row gap-4">
+                          <button className="group font-poppins bg-action-primary text-white px-8 py-4 rounded-xl text-base font-semibold transition-all duration-300 transform hover:bg-action-primary-hover hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-accent active:scale-95 flex items-center justify-center">
+                            View Details
+                            <svg className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
+                          </button>
+                          <button className="font-poppins bg-transparent border-2 border-action-primary text-action-primary px-8 py-4 rounded-xl text-base font-semibold transition-all duration-300 hover:bg-action-primary hover:border-action-primary hover:text-white hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-accent active:scale-95">
+                            Check Availability
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </swiper-slide>
@@ -392,23 +461,7 @@ const AccommodationSection: React.FC = () => {
             </swiper-container>
 
             {/* Slide indicators */}
-            <div className="flex justify-center mt-12 space-x-2">
-              {rooms.map((_, index) => (
-                <button
-                  key={index}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    currentSlide === index 
-                      ? 'bg-action-accent scale-125' 
-                      : 'bg-border-soft hover:bg-action-primary'
-                  }`}
-                  onClick={() => {
-                    if (mainSwiperRef.current) {
-                      mainSwiperRef.current.swiper.slideTo(index);
-                    }
-                  }}
-                />
-              ))}
-            </div>
+
           </div>
         ) : (
           <div className="flex items-center justify-center h-96 bg-background-secondary rounded-3xl">
@@ -453,36 +506,36 @@ const AccommodationSection: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
             {facilities.map((facility, index) => (
-              <div 
-                key={index} 
-                className="facility-card group text-center p-6 bg-background rounded-2xl shadow-heritage hover:shadow-heritage-lg transition-all duration-500 transform hover:-translate-y-2 opacity-100"
+                             <div 
+                 key={index} 
+                 className="facility-card group text-center p-3 sm:p-6 bg-background rounded-xl sm:rounded-2xl shadow-heritage hover:shadow-heritage-lg transition-all duration-500 transform hover:-translate-y-2 opacity-100"
                 style={{ 
                   transitionDelay: `${index * 100}ms`,
                   animationDelay: `${index * 150}ms` 
                 }}
               >
                 {/* Icon with enhanced styling */}
-                <div className="flex justify-center mb-4">
-                  <div className="relative p-4 bg-gradient-to-br from-action-accent/10 to-action-primary/10 rounded-xl group-hover:from-action-accent/20 group-hover:to-action-primary/20 transition-all duration-300">
-                    <facility.icon className="w-8 h-8 text-action-accent group-hover:text-action-primary transition-colors duration-300" />
-                  </div>
-                </div>
+                                 <div className="flex justify-center mb-3 sm:mb-4">
+                   <div className="relative p-2 sm:p-4 bg-gradient-to-br from-action-accent/10 to-action-primary/10 rounded-lg sm:rounded-xl group-hover:from-action-accent/20 group-hover:to-action-primary/20 transition-all duration-300">
+                     <facility.icon className="w-6 h-6 sm:w-8 sm:h-8 text-action-accent group-hover:text-action-primary transition-colors duration-300" />
+                   </div>
+                 </div>
 
-                <div className="space-y-3">
-                  <div>
-                    <h4 className="text-lg font-playfair text-text-heading mb-2 group-hover:text-action-accent transition-colors duration-300">
-                      {facility.title}
-                    </h4>
-                    <div className="inline-block bg-action-accent/10 text-action-accent px-3 py-1 rounded-full text-xs font-poppins font-medium mb-3">
-                      {facility.highlight}
-                    </div>
-                  </div>
-                  <p className="font-cormorant text-sm text-text leading-relaxed">
-                    {facility.description}
-                  </p>
-                </div>
+                                 <div className="space-y-2 sm:space-y-3">
+                   <div>
+                     <h4 className="text-sm sm:text-lg font-playfair text-text-heading mb-1 sm:mb-2 group-hover:text-action-accent transition-colors duration-300">
+                       {facility.title}
+                     </h4>
+                     <div className="inline-block bg-action-accent/10 text-action-accent px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs font-poppins font-medium mb-2 sm:mb-3">
+                       {facility.highlight}
+                     </div>
+                   </div>
+                   <p className="font-cormorant text-xs sm:text-sm text-text leading-relaxed">
+                     {facility.description}
+                   </p>
+                 </div>
 
                 {/* Subtle hover border effect */}
                 <div className="absolute inset-0 rounded-2xl border border-action-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -504,15 +557,15 @@ const AccommodationSection: React.FC = () => {
         </div>
       </div>
 
-             {/* Enhanced custom styles */}
-       <style>{`
-        .accommodation-swiper {
-          --swiper-navigation-color: theme('colors.action.accent');
-          --swiper-pagination-color: theme('colors.action.accent');
-          --swiper-navigation-size: 40px;
-        }
-        
-                 .accommodation-swiper swiper-slide {
+                           {/* Enhanced custom styles */}
+        <style>{`
+         .accommodation-swiper {
+           --swiper-navigation-color: theme('colors.action.accent');
+           --swiper-pagination-color: theme('colors.action.accent');
+           --swiper-navigation-size: 40px;
+         }
+         
+         .accommodation-swiper swiper-slide {
            opacity: 1;
            transition: opacity 0.3s ease;
          }
@@ -521,15 +574,49 @@ const AccommodationSection: React.FC = () => {
            opacity: 1;
          }
 
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-        }
-        
-        .facility-card:hover .relative {
-          animation: float 2s ease-in-out infinite;
-        }
-      `}</style>
+         @keyframes float {
+           0%, 100% { transform: translateY(0px); }
+           50% { transform: translateY(-10px); }
+         }
+         
+         .facility-card:hover .relative {
+           animation: float 2s ease-in-out infinite;
+         }
+
+         /* Mobile card container styling - removed white background and padding */
+         @media (max-width: 1023px) {
+           .accommodation-swiper {
+             border-radius: 1rem;
+             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+           }
+           
+           .accommodation-swiper swiper-slide {
+             /* Removed padding, background, and margin to fix nasty card look */
+             border-radius: 1rem;
+           }
+         }
+
+         /* Improved cursor behavior */
+         swiper-container {
+           cursor: grab;
+         }
+         
+         swiper-container:active {
+           cursor: grabbing;
+         }
+         
+         swiper-container.swiper-container-rtl {
+           direction: rtl;
+         }
+
+         /* Trackpad and touch improvements */
+         swiper-container {
+           touch-action: pan-y pinch-zoom;
+           -webkit-overflow-scrolling: touch;
+         }
+         
+         
+       `}</style>
     </section>
   );
 };

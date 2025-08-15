@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 
 // =================================================================
 // == SVG ICONS
@@ -7,8 +7,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 const ArrowRightIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
 );
-
-
 
 // =================================================================
 // == DATA STRUCTURES
@@ -31,6 +29,45 @@ interface GalleryImage {
 // =================================================================
 // == HELPER COMPONENTS
 // =================================================================
+const ParallaxHero: React.FC = () => {
+    const heroRef = useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: heroRef,
+        offset: ['start start', 'end start'],
+    });
+    // Parallax effect for the background image
+    const backgroundY = useTransform(scrollYProgress, [0, 1], ['0%', '20%']);
+    // Opacity fade for the text
+    const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+
+    return (
+        <div ref={heroRef} className="relative h-[60vh] w-full overflow-hidden">
+            <motion.div 
+                className="absolute inset-0 z-0" 
+                style={{ y: backgroundY }}
+            >
+                <img
+                    src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1600&h=1200&fit=crop&q=80"
+                    alt="Elegant dining hall with warm lighting"
+                    className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20"></div>
+            </motion.div>
+            <motion.div
+                className="relative z-10 h-full flex flex-col justify-center items-center text-center text-text-on-color p-6"
+                style={{ opacity }}
+            >
+                <p className="font-poppins text-sm tracking-[0.2em] text-action-accent uppercase mb-4 font-medium">
+                    Kohinoor Restaurant
+                </p>
+                <h1 className="text-h2 font-playfair drop-shadow-lg">
+                    A Culinary Heritage
+                </h1>
+            </motion.div>
+        </div>
+    );
+};
+
 const SectionHeader: React.FC<{ subtitle: string; title: string; description: string; }> = ({ subtitle, title, description }) => (
     <motion.div
         className="text-center mb-16"
@@ -79,23 +116,9 @@ const DiningSection: React.FC = () => {
     return () => clearInterval(interval);
   }, [signatureDishes.length]);
 
-  const getCardPosition = (index: number) => {
-    const offset = index - currentIndex;
-    const total = signatureDishes.length;
-    
-    // Handle circular navigation
-    const normalizedOffset = ((offset % total) + total) % total;
-    
-    if (normalizedOffset === 0) return 'center';
-    if (normalizedOffset === 1) return 'right1';
-    if (normalizedOffset === 2) return 'right2';
-    if (normalizedOffset === total - 1) return 'left1';
-    if (normalizedOffset === total - 2) return 'left2';
-    return 'hidden';
-  };
-
   return (
     <div className="bg-background">
+      <ParallaxHero />
       {/* ======================= SIGNATURE DISHES SLIDER ======================= */}
       <div className="bg-background-secondary py-24 md:py-32 overflow-hidden">
         <div className="container mx-auto px-6 lg:px-8">
@@ -105,64 +128,53 @@ const DiningSection: React.FC = () => {
             description="A curated selection of timeless classics and modern interpretations that define the Kohinoor experience, each telling a story of tradition and flavour."
           />
           
-          {/* Desktop Center-Focused Slider */}
-          <div className="hidden md:flex justify-center items-center h-[750px] relative max-w-8xl mx-auto overflow-hidden">
-            <motion.div
-              className="flex items-center justify-center relative w-full h-full cursor-grab active:cursor-grabbing"
-              drag="x"
-              dragConstraints={{ left: -200, right: 200 }}
-              dragElastic={0.2}
-              onDragEnd={(_, info) => {
-                if (info.offset.x < -150) {
-                  setCurrentIndex((prev) => (prev + 1) % signatureDishes.length);
-                } else if (info.offset.x > 150) {
-                  setCurrentIndex((prev) => (prev - 1 + signatureDishes.length) % signatureDishes.length);
-                }
-              }}
-            >
-              <AnimatePresence>
-                {signatureDishes.map((dish, index) => {
-                  const position = getCardPosition(index);
-                  if (position === 'hidden') return null;
+          <div className="hidden md:flex justify-center items-center h-[500px] relative">
+            <AnimatePresence>
+              {signatureDishes.map((dish, index) => {
+                const offset = index - currentIndex;
+                const total = signatureDishes.length;
+                let position = 'hidden';
 
-                  const variants = {
-                    hidden: { x: 0, scale: 0.8, opacity: 0, zIndex: 1 },
-                    left2: { x: '-140%', scale: 0.75, opacity: 0.4, zIndex: 2 },
-                    left1: { x: '-70%', scale: 0.85, opacity: 0.7, zIndex: 3 },
-                    center: { x: 0, scale: 1.15, opacity: 1, zIndex: 4 },
-                    right1: { x: '70%', scale: 0.85, opacity: 0.7, zIndex: 3 },
-                    right2: { x: '140%', scale: 0.75, opacity: 0.4, zIndex: 2 },
-                  };
+                if (offset === 0) position = 'center';
+                else if (offset === 1 || offset === -(total - 1)) position = 'right';
+                else if (offset === -1 || offset === total - 1) position = 'left';
 
-                  return (
-                    <motion.div
-                      key={dish.id}
-                      variants={variants}
-                      initial="hidden"
-                      animate={position}
-                      exit="hidden"
-                      transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-                      className="absolute w-[550px] cursor-pointer"
-                      onClick={() => setCurrentIndex(index)}
-                      whileHover={{ scale: position === 'center' ? 1.18 : 1.05 }}
-                    >
-                      <div className="bg-background-tertiary rounded-3xl shadow-heritage-lg border border-border-soft p-10 flex flex-col items-center text-center">
-                        <div className="w-72 h-72 rounded-full overflow-hidden -mt-28 border-8 border-background shadow-2xl">
-                          <img src={dish.image} alt={dish.name} className="w-full h-full object-cover" />
-                        </div>
-                        <h3 className="font-playfair text-h2 text-text-heading mt-10">{dish.name}</h3>
-                        <p className="font-cormorant text-text-subtle my-6 text-lg flex-grow leading-relaxed max-w-md">{dish.description}</p>
-                        <span className="font-poppins font-semibold text-action-accent text-2xl my-4">{dish.price}</span>
+                if (position === 'hidden') return null;
+
+                const variants = {
+                  hidden: { x: 0, scale: 0.8, opacity: 0, zIndex: 1 },
+                  left: { x: '-50%', scale: 0.95, opacity: 0.5, zIndex: 2 },
+                  center: { x: 0, scale: 1.05, opacity: 1, zIndex: 3 },
+                  right: { x: '50%', scale: 0.95, opacity: 0.5, zIndex: 2 },
+                };
+
+                return (
+                  <motion.div
+                    key={dish.id}
+                    variants={variants}
+                    initial="hidden"
+                    animate={position}
+                    exit="hidden"
+                    transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+                    className="absolute w-[350px]"
+                  >
+                    <div className="bg-background-tertiary rounded-2xl shadow-heritage-lg border border-border-soft p-6 flex flex-col items-center text-center">
+                      <div className="w-48 h-48 rounded-full overflow-hidden -mt-20 border-4 border-background shadow-lg">
+                        <img src={dish.image} alt={dish.name} className="w-full h-full object-cover" />
                       </div>
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
-            </motion.div>
+                      <h3 className="font-playfair text-h4 text-text-heading mt-6">{dish.name}</h3>
+                      <p className="font-cormorant text-text-subtle my-3 text-sm flex-grow">{dish.description}</p>
+                      <span className="font-poppins font-semibold text-action-accent text-lg my-2">{dish.price}</span>
+                       <button className="font-poppins text-sm font-medium bg-action-primary text-text-on-color px-6 py-2 rounded-lg mt-2 hover:bg-action-primary-hover transition-colors">Order Now</button>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
           </div>
 
           {/* Mobile Swipeable Slider */}
-          <div className="md:hidden relative h-[650px]">
+          <div className="md:hidden relative h-[450px]">
             <AnimatePresence>
               <motion.div
                 key={currentIndex}
@@ -170,22 +182,23 @@ const DiningSection: React.FC = () => {
                 initial={{ x: '100%', opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: '-100%', opacity: 0 }}
-                transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+                transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
                 drag="x"
                 dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.2}
+                dragElastic={0.3}
                 onDragEnd={(_, info) => {
-                  if (info.offset.x < -150) setCurrentIndex((p) => (p + 1) % signatureDishes.length);
-                  if (info.offset.x > 150) setCurrentIndex((p) => (p - 1 + signatureDishes.length) % signatureDishes.length);
+                  if (info.offset.x < -100) setCurrentIndex((p) => (p + 1) % signatureDishes.length);
+                  if (info.offset.x > 100) setCurrentIndex((p) => (p - 1 + signatureDishes.length) % signatureDishes.length);
                 }}
               >
-                <div className="bg-background-tertiary rounded-3xl shadow-heritage-lg border border-border-soft p-10 flex flex-col items-center text-center h-full">
-                  <div className="w-64 h-64 rounded-full overflow-hidden -mt-24 border-8 border-background shadow-2xl">
+                <div className="bg-background-tertiary rounded-2xl shadow-heritage-lg border border-border-soft p-6 flex flex-col items-center text-center h-full">
+                  <div className="w-48 h-48 rounded-full overflow-hidden -mt-16 border-4 border-background shadow-lg">
                     <img src={signatureDishes[currentIndex].image} alt={signatureDishes[currentIndex].name} className="w-full h-full object-cover" />
                   </div>
-                  <h3 className="font-playfair text-h2 text-text-heading mt-10">{signatureDishes[currentIndex].name}</h3>
-                  <p className="font-cormorant text-text-subtle my-6 text-lg flex-grow leading-relaxed">{signatureDishes[currentIndex].description}</p>
-                  <span className="font-poppins font-semibold text-action-accent text-2xl my-4">{signatureDishes[currentIndex].price}</span>
+                  <h3 className="font-playfair text-h4 text-text-heading mt-6">{signatureDishes[currentIndex].name}</h3>
+                  <p className="font-cormorant text-text-subtle my-3 text-sm flex-grow">{signatureDishes[currentIndex].description}</p>
+                  <span className="font-poppins font-semibold text-action-accent text-lg my-2">{signatureDishes[currentIndex].price}</span>
+                  <button className="font-poppins text-sm font-medium bg-action-primary text-text-on-color px-6 py-2 rounded-lg mt-2 hover:bg-action-primary-hover transition-colors">Order Now</button>
                 </div>
               </motion.div>
             </AnimatePresence>

@@ -9,6 +9,7 @@ interface TimelineEvent {
   title: string;
   description: string;
   image: string;
+  highlights: string[];
 }
 
 // =================================================================
@@ -74,10 +75,10 @@ const StoryModal: React.FC<StoryModalProps> = ({ event, onClose }) => {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in" onClick={onClose}>
             <div className="bg-background-secondary rounded-2xl shadow-heritage-lg w-full max-w-2xl max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="p-6 border-b border-border-soft flex justify-between items-center">
-                                         <div>
-                         <p className="font-poppins text-sm text-action-accent uppercase">{event?.period}</p>
-                         <h3 className="font-playfair text-h3-sm text-text-heading">{event?.title}</h3>
-                     </div>
+                    <div>
+                        <p className="font-poppins text-sm text-action-accent uppercase">{event?.period}</p>
+                        <h3 className="font-playfair text-h3-sm text-text-heading">{event?.title}</h3>
+                    </div>
                     <button onClick={onClose} className="text-text-subtle hover:text-text-heading text-3xl leading-none">&times;</button>
                 </div>
                 <div className="p-8 overflow-y-auto">
@@ -91,54 +92,6 @@ const StoryModal: React.FC<StoryModalProps> = ({ event, onClose }) => {
                     {story && <p className="font-cormorant text-lg text-text leading-relaxed whitespace-pre-line">{story}</p>}
                 </div>
             </div>
-        </div>
-    );
-};
-
-const StorySnippet: React.FC<{ event: TimelineEvent }> = ({ event }) => {
-    const [snippet, setSnippet] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const generateSnippet = async () => {
-            setIsLoading(true);
-            const prompt = `You are a historical fiction writer. Write a very short, one or two-sentence evocative teaser about the "${event.title}" era at Amritha Heritage, based on this description: "${event.description}". The tone should be mysterious and elegant.`;
-            
-            try {
-                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistory };
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (!response.ok) throw new Error('API Error');
-                const result = await response.json();
-                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (text) setSnippet(text.trim());
-
-            } catch (error) {
-                console.error("Snippet generation failed:", error);
-                setSnippet("A chapter of history waiting to be told...");
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        generateSnippet();
-    }, [event]);
-
-    return (
-        <div className="mt-4 pt-4 border-t border-border-soft/50">
-            {isLoading ? (
-                <div className="h-12 flex items-center">
-                    <div className="w-4 h-4 border-2 border-t-transparent border-action-primary/50 rounded-full animate-spin"></div>
-                </div>
-            ) : (
-                <p className="font-cormorant text-text-subtle italic">"{snippet}"</p>
-            )}
         </div>
     );
 };
@@ -186,7 +139,14 @@ const TimelineCard: React.FC<{ event: TimelineEvent; onStoryClick: () => void; }
             <p className="font-poppins text-sm tracking-widest text-action-accent uppercase mb-2">{event.period}</p>
             <h3 className="font-playfair text-h3 text-text-heading mb-3">{event.title}</h3>
             <p className="font-cormorant text-text-subtle mb-6">{event.description}</p>
-            <StorySnippet event={event} />
+            <div className="mt-4 pt-4 border-t border-border-soft/50">
+                <h4 className="font-poppins text-sm font-medium text-text-heading mb-3">Key Highlights:</h4>
+                <div className="flex flex-wrap gap-2">
+                    {event.highlights.map(highlight => (
+                        <span key={highlight} className="text-xs bg-border-soft text-text px-3 py-1 rounded-full">{highlight}</span>
+                    ))}
+                </div>
+            </div>
             <button 
                 onClick={onStoryClick}
                 className="font-poppins text-sm font-medium text-action-primary hover:text-action-primary-hover transition-colors duration-300 mt-4"
@@ -216,26 +176,29 @@ const Intro: React.FC = () => {
       period: "Early 1900s",
       title: "The Essenden Bungalow",
       description: "Built with unique Travancore colonial architecture, it was the home of Eunice Gomez and T. Shivaramasethu Pillai, surrounded by lush gardens.",
-      image: "./images/Intro/intro2.jpg"
+      image: "./images/Intro/intro2.jpg",
+      highlights: ["Travancore Architecture", "Lush Greenery", "Home of Eunice Gomez"]
     },
     {
       period: "1970s",
       title: "A Cinematic Golden Era",
       description: "The bungalow became a favourite hangout for the Malayalam film world. Its Kohinoor Restaurant and 'Dining on the Lawn' became star attractions.",
-      image: "./images/Intro/intro2.jpg"
-
+      image: "./images/Intro/intro2.jpg",
+      highlights: ["Film World Hub", "Kohinoor Restaurant", "Dining on the Lawn"]
     },
     {
       period: "The Restoration",
       title: "A Heritage Reborn",
       description: "A major restoration project brought the building back to its original splendour, preserving its architecture while integrating modern comforts.",
-      image: "./images/Intro/intro2.jpg"
+      image: "./images/Intro/intro2.jpg",
+      highlights: ["Meticulous Restoration", "Modern Comforts", "Preserved Architecture"]
     },
     {
       period: "Present Day",
       title: "The Amritha Heritage",
       description: "Today, it stands as a living monument—a boutique hotel celebrating its colonial charm and cinematic past, with the revived Kohinoor Restaurant.",
-      image: "./images/Intro/intro2.jpg"
+      image: "./images/Intro/intro2.jpg",
+      highlights: ["Boutique Heritage Hotel", "Revived Kohinoor", "A Living Monument"]
     }
   ];
 
@@ -290,7 +253,6 @@ const Intro: React.FC = () => {
                 const opacity = useTransform(cardScrollYProgress, [0, 1], [0, 1]);
                 const scale = useTransform(cardScrollYProgress, [0, 1], [0.85, 1]);
                 const x = useTransform(cardScrollYProgress, [0, 1], [isEven ? -50 : 50, 0]);
-
 
                 return (
                   <div ref={cardRef} key={event.period} className={`flex items-center w-full ${isEven ? 'justify-start' : 'justify-end'}`}>
@@ -347,6 +309,12 @@ const Intro: React.FC = () => {
               <h3 className="text-h3 font-playfair text-text-heading">A Living Legacy</h3>
               <p className="text-lg font-cormorant text-text-subtle max-w-3xl mx-auto leading-relaxed mt-6">
                   We invite you to become a part of our story. Experience the unique blend of history, luxury, and hospitality that makes Amritha Heritage a destination unlike any other.
+              </p>
+              <p className="text-lg font-cormorant text-text-subtle max-w-3xl mx-auto leading-relaxed mt-4">
+                  Nestled in the heart of Thiruvananthapuram, Amritha Heritage stands as a testament to timeless elegance and cultural richness. Every corner of our heritage hotel whispers stories of the past, while offering all the comforts of modern living. 
+              </p>
+              <p className="text-lg font-cormorant text-text-subtle max-w-3xl mx-auto leading-relaxed mt-4">
+                  Whether you are seeking a peaceful retreat, a journey through Kerala’s vibrant history, or a memorable celebration, our doors are open to welcome you. Discover lush gardens, colonial architecture, and the warmth of true hospitality—where every guest becomes part of our enduring legacy.
               </p>
           </motion.div>
         </div>
