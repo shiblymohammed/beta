@@ -291,10 +291,10 @@ const AccommodationSection: React.FC = () => {
             y: useTransform(scrollYProgress, [0, 1], [0, 100])
           }}
         >
-          <p className="font-poppins text-sm tracking-[0.2em] text-action-accent uppercase mb-4 font-medium drop-shadow-lg">
+          <p className="font-cinzel text-h3-sm sm:text-h3 text-text-on-color leading-tight drop-shadow-md mt-6 overflow-hidden">
             Our Rooms
           </p>
-          <h1 className="text-h1 font-playfair drop-shadow-lg mb-4">
+          <h1 className="font-cinzel text-h1-sm sm:text-h1 text-text-on-color leading-tight drop-shadow-md mt-6 overflow-hidden">
             Stay in Comfort
           </h1>
           <p className="font-cormorant text-lg text-white/90 max-w-2xl leading-relaxed drop-shadow-md">
