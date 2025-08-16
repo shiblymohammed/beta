@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // =================================================================
@@ -8,6 +8,40 @@ const CalendarIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" he
 const UserIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-text-subtle"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
 const ChevronLeftIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>;
 const ChevronRightIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>;
+
+// =================================================================
+// == TYPES
+// =================================================================
+interface Room {
+  id: number;
+  name: string;
+  description: string;
+  amenities: string[];
+  capacity: number;
+  price: number;
+  images: string[];
+}
+
+interface BookingDetails {
+  checkIn: string;
+  checkOut: string;
+  adults: number;
+  children: number;
+}
+
+interface GuestInfo {
+  name: string;
+  email: string;
+  phone: string;
+  requests: string;
+}
+
+interface PriceSummary {
+  nights: number;
+  roomTotal: number;
+  taxes: number;
+  total: number;
+}
 
 // =================================================================
 // == DATA
@@ -23,15 +57,21 @@ const roomsData = [
 // =================================================================
 // == HELPER COMPONENTS
 // =================================================================
-const RoomCard = ({ room, onSelect, isSelected }) => {
+interface RoomCardProps {
+  room: Room;
+  onSelect: (room: Room) => void;
+  isSelected: boolean;
+}
+
+const RoomCard = ({ room, onSelect, isSelected }: RoomCardProps) => {
     const [currentImage, setCurrentImage] = useState(0);
 
-    const nextImage = (e) => {
+    const nextImage = (e: React.MouseEvent) => {
         e.stopPropagation();
         setCurrentImage((prev) => (prev + 1) % room.images.length);
     };
 
-    const prevImage = (e) => {
+    const prevImage = (e: React.MouseEvent) => {
         e.stopPropagation();
         setCurrentImage((prev) => (prev - 1 + room.images.length) % room.images.length);
     };
@@ -64,7 +104,9 @@ const RoomCard = ({ room, onSelect, isSelected }) => {
                 <h3 className="font-playfair text-h3-sm text-text-heading">{room.name}</h3>
                 <p className="font-cormorant text-text-subtle mt-2 mb-4">{room.description}</p>
                 <div className="flex flex-wrap gap-2 mb-4">
-                    {room.amenities.map(amenity => <span key={amenity} className="text-xs bg-background-tertiary text-text px-3 py-1 rounded-full">{amenity}</span>)}
+                    {room.amenities.map((amenity: string, index: number) => (
+                        <span key={index} className="text-xs bg-background-tertiary text-text px-3 py-1 rounded-full">{amenity}</span>
+                    ))}
                 </div>
                 <div className="flex justify-between items-center">
                     <div>
@@ -80,7 +122,19 @@ const RoomCard = ({ room, onSelect, isSelected }) => {
     );
 };
 
-const ConfirmationModal = ({ bookingDetails, onClose }) => (
+interface BookingConfirmationProps {
+  bookingDetails: {
+    name: string;
+    email: string;
+    checkIn: string;
+    checkOut: string;
+    total: number;
+    room: Room;
+  };
+  onClose: () => void;
+}
+
+const BookingConfirmation = ({ bookingDetails, onClose }: BookingConfirmationProps) => (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
         <div className="bg-background-secondary rounded-2xl shadow-heritage-lg w-full max-w-lg p-8 text-center">
             <h2 className="font-playfair text-h2 text-action-accent mb-4">Booking Confirmed!</h2>
@@ -99,17 +153,17 @@ const ConfirmationModal = ({ bookingDetails, onClose }) => (
 // =================================================================
 // == MAIN APP COMPONENT
 // =================================================================
-export default function App() {
-    const [selectedRoom, setSelectedRoom] = useState(null);
-    const [bookingDetails, setBookingDetails] = useState({
+function Booking() {
+    const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+    const [bookingDetails, setBookingDetails] = useState<BookingDetails>({
         checkIn: '',
         checkOut: '',
         adults: 2,
         children: 0,
     });
-    const [guestInfo, setGuestInfo] = useState({ name: '', email: '', phone: '', requests: '' });
-    const [priceSummary, setPriceSummary] = useState({ nights: 0, roomTotal: 0, taxes: 0, total: 0 });
-    const [errors, setErrors] = useState({});
+    const [guestInfo, setGuestInfo] = useState<GuestInfo>({ name: '', email: '', phone: '', requests: '' });
+    const [priceSummary, setPriceSummary] = useState<PriceSummary>({ nights: 0, roomTotal: 0, taxes: 0, total: 0 });
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [isConfirmed, setIsConfirmed] = useState(false);
     
     const bookingFormRef = useRef(null);
@@ -132,23 +186,23 @@ export default function App() {
         }
     }, [bookingDetails, selectedRoom]);
 
-    const handleRoomSelect = (room) => {
+    const handleRoomSelect = (room: Room) => {
         setSelectedRoom(room);
         setTimeout(() => {
             bookingFormRef.current?.scrollIntoView({ behavior: 'smooth' });
         }, 100);
     };
 
-    const handleBookingChange = (e) => {
+    const handleBookingChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setBookingDetails(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
     
-    const handleGuestInfoChange = (e) => {
+    const handleGuestInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setGuestInfo(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
     const validateForm = () => {
-        const newErrors = {};
+        const newErrors: Record<string, string> = {};
         if (!selectedRoom) newErrors.room = 'Please select a room.';
         if (!bookingDetails.checkIn) newErrors.checkIn = 'Check-in date is required.';
         if (!bookingDetails.checkOut) newErrors.checkOut = 'Check-out date is required.';
@@ -160,7 +214,7 @@ export default function App() {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (validateForm()) {
             console.log("Booking Submitted:", { selectedRoom, bookingDetails, guestInfo, priceSummary });
@@ -170,7 +224,7 @@ export default function App() {
 
     return (
         <div className="bg-background font-cormorant text-text">
-            {isConfirmed && <ConfirmationModal bookingDetails={{...guestInfo, ...bookingDetails, ...priceSummary, room: selectedRoom}} onClose={() => setIsConfirmed(false)} />}
+            {isConfirmed && selectedRoom && <BookingConfirmation bookingDetails={{...guestInfo, ...bookingDetails, ...priceSummary, room: selectedRoom}} onClose={() => setIsConfirmed(false)} />}
             
             {/* Header */}
             <header className="py-4 px-6 md:px-12 flex justify-between items-center border-b border-border-soft">
@@ -202,7 +256,7 @@ export default function App() {
                     <div className="container mx-auto">
                         <h2 className="font-playfair text-h2 text-text-heading text-center mb-12">Choose Your Suite</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {roomsData.map(room => (
+                            {roomsData.map((room: Room) => (
                                 <RoomCard 
                                     key={room.id} 
                                     room={room} 

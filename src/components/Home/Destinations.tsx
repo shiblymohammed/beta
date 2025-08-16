@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // =================================================================
 // == SVG ICONS
 // =================================================================
-const MapPinIcon = ({ className = "w-5 h-5" }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-);
+
 const ArrowRightIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
 );
@@ -26,7 +24,12 @@ interface Destination {
 // =================================================================
 // == GEMINI API MODAL COMPONENT
 // =================================================================
-const ConciergeModal = ({ destination, onClose }) => {
+interface ConciergeModalProps {
+  destination: Destination | null;
+  onClose: () => void;
+}
+
+const ConciergeModal = ({ destination, onClose }: ConciergeModalProps) => {
     const [itinerary, setItinerary] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
@@ -80,7 +83,7 @@ const ConciergeModal = ({ destination, onClose }) => {
             <div className="bg-background-secondary rounded-2xl shadow-heritage-lg w-full max-w-lg max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="p-6 border-b border-border-soft">
                     <p className="font-poppins text-sm text-action-accent uppercase">Heritage Concierge</p>
-                    <h3 className="font-playfair text-h3-sm text-text-heading">A Day Trip to {destination.title}</h3>
+                    <h3 className="font-playfair text-h3-sm text-text-heading">A Day Trip to {destination?.title}</h3>
                 </div>
                 <div className="p-8 overflow-y-auto">
                     {isLoading ? (

@@ -1,7 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 
 // Re-usable component for the Direct Contact cards
-const ContactCard = ({ icon, title, description, contact, href }) => (
+interface ContactCardProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  contact: string;
+  href: string;
+}
+
+const ContactCard = ({ icon, title, description, contact, href }: ContactCardProps) => (
   <div className="bg-background p-6 rounded-lg border border-border-soft/50 shadow-heritage transition-transform duration-300 hover:-translate-y-1">
     <div className="flex items-start gap-4">
       <div className="flex-shrink-0 w-12 h-12 bg-background-tertiary rounded-full flex items-center justify-center text-action-accent">
@@ -40,16 +48,16 @@ const Contact = () => {
     return () => { if (sectionRef.current) observer.unobserve(sectionRef.current); };
   }, []);
 
-  const getAnimClass = (delay) =>
+  const getAnimClass = (delay: number) =>
     `transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`;
   
   // --- Handlers ---
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
     alert('Thank you for your message! We will get back to you soon.');

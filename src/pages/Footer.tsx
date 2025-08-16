@@ -1,7 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // Re-usable Social Icon component for cleaner code
-const SocialIcon = ({ href, title, children }) => (
+interface SocialIconProps {
+  href: string;
+  title: string;
+  children: React.ReactNode;
+}
+
+const SocialIcon = ({ href, title, children }: SocialIconProps) => (
   <a
     href={href}
     title={title}
@@ -35,7 +41,7 @@ function Footer() {
     return () => { if (footerRef.current) observer.unobserve(footerRef.current); };
   }, []);
 
-  const getAnimClass = (delay) => 
+  const getAnimClass = (delay: number) => 
     `transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`;
 
   return (
