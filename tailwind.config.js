@@ -12,29 +12,22 @@ export default {
       // == THEME FOUNDATION: COLORS & FONTS
       // =================================================================
       colors: {
-        // --- Semantic Color Palette (v3) ---
         'background': {
-          DEFAULT: '#FBF9F6',   // Main body background
-          secondary: '#F5F0E6', // For alternating sections or navbar scroll state
-          tertiary: '#EDE8DA',  // For distinct sections or cards
+          DEFAULT: '#FBF9F6',
+          secondary: '#F5F0E6',
+          tertiary: '#EDE8DA',
         },
-        'menu-overlay': '#2C3E50', // Rich, deep indigo for the full-screen menu
-
-        // --- Text ---
+        'menu-overlay': '#2C3E50',
         'text': {
-          DEFAULT: '#435547',   // Default body text
-          heading: '#3A4A3E',   // For main headings
-          subtle: '#5A594D',    // For de-emphasized text
-          'on-color': '#FBF9F6',// For text on dark/colored backgrounds
+          DEFAULT: '#435547',
+          heading: '#3A4A3E',
+          subtle: '#5A594D',
+          'on-color': '#FBF9F6',
         },
-
-        // --- Borders ---
         'border': {
-          soft: '#DCD7C9',      // Subtle, decorative borders
-          interactive: '#8E8471', // For inputs, etc.
+          soft: '#DCD7C9',
+          interactive: '#8E8471',
         },
-
-        // --- Interactive Components ---
         'action': {
           primary: '#7A6B5C',
           'primary-hover': '#5C4E42',
@@ -78,18 +71,19 @@ export default {
       },
 
       // =================================================================
-      // == ANIMATION SYSTEM (v3)
+      // == ANIMATION SYSTEM (v4)
       // =================================================================
       keyframes: {
         'fade-in': { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
         'fade-in-up': { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
         'pulse-subtle': { '0%, 100%': { opacity: '1' }, '50%': { opacity: '.7' } },
         'slide-in-from-left': { '0%': { transform: 'translateX(-100%)' }, '100%': { transform: 'translateX(0)' } },
-        // Renamed for clarity
-        'reveal-stagger': {
-            '0%': { transform: 'translateY(100%)', opacity: '0' },
-            '100%': { transform: 'translateY(0)', opacity: '1' },
-        }
+        'reveal-stagger': { '0%': { transform: 'translateY(100%)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
+        // New shimmer animation for a luxury feel on buttons and interactive elements
+        'shimmer': {
+            '0%': { backgroundPosition: '-200% 0' },
+            '100%': { backgroundPosition: '200% 0' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.5s ease-out forwards',
@@ -97,6 +91,7 @@ export default {
         'pulse-subtle': 'pulse-subtle 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'slide-in-left': 'slide-in-from-left 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
         'reveal-stagger': 'reveal-stagger 1s ease-out forwards',
+        'shimmer': 'shimmer 3s infinite linear',
       },
     },
   },
