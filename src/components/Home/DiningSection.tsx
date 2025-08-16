@@ -55,13 +55,13 @@ const ParallaxHero: React.FC = () => {
                 className="relative z-10 h-full flex flex-col justify-center items-center text-center text-text-on-color p-6"
                 style={{ y: textY, opacity }}
             >
-                <p className="font-poppins text-sm tracking-[0.2em] text-action-accent uppercase mb-4 font-medium">
-                    Kohinoor Restaurant
-                </p>
-                <h1 className="text-h1 font-playfair drop-shadow-lg mb-4">
+                {/* <p className="font-poppins text-sm tracking-[0.2em] text-action-accent uppercase mb-4 font-medium"> */}
+                    {/* Kohinoor Restaurant */}
+                {/* </p> */}
+                <h1 className="font-cinzel text-h3-sm sm:text-h3 text-text-on-color leading-tight drop-shadow-md mt-6 overflow-hidden">
                     A Culinary Heritage
                 </h1>
-                <p className="font-cormorant text-lg text-text-on-color/90 max-w-2xl leading-relaxed drop-shadow-md">
+                <p className="font-cinzel text-sm sm:text-base text-text-on-color leading-snug drop-shadow-md mt-6 overflow-hidden text-center">
                     Experience the finest blend of traditional Kerala cuisine and colonial elegance in our historic dining spaces, where every meal tells a story of heritage and hospitality.
                 </p>
             </motion.div>
