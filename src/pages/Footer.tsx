@@ -45,7 +45,7 @@ function Footer() {
     `transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`;
 
   return (
-    <footer ref={footerRef} className="relative bg-background pt-40 -mt-24">
+    <footer ref={footerRef} className="relative bg-background pt-40 -mt-50">
       {/* This SVG creates the wave shape. It's hidden but used by clip-path. */}
       <svg height="0" width="0" className="absolute">
         <defs>

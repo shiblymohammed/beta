@@ -226,24 +226,10 @@ function Booking() {
         <div className="bg-background font-cormorant text-text">
             {isConfirmed && selectedRoom && <BookingConfirmation bookingDetails={{...guestInfo, ...bookingDetails, ...priceSummary, room: selectedRoom}} onClose={() => setIsConfirmed(false)} />}
             
-            {/* Header */}
-            <header className="py-4 px-6 md:px-12 flex justify-between items-center border-b border-border-soft">
-                <div className="flex items-center">
-                    <img src="https://placehold.co/40x40/3A4A3E/FBF9F6?text=AH" alt="Amritha Heritage Logo" className="h-10 w-10 rounded-full" />
-                    <span className="font-cinzel text-xl text-text-heading ml-4 hidden sm:block">Amritha Heritage</span>
-                </div>
-                <nav className="hidden md:flex items-center gap-6 font-poppins text-sm">
-                    <a href="#" className="hover:text-action-accent">Home</a>
-                    <a href="#" className="hover:text-action-accent">Contact</a>
-                </nav>
-                <a href="#booking-form" className="font-poppins text-sm bg-action-primary text-text-on-color px-6 py-2.5 rounded-lg hover:bg-action-primary-hover transition-colors">
-                    Book Now
-                </a>
-            </header>
-
+    
             <main>
                 {/* Hero */}
-                <section className="relative h-[50vh] bg-gray-500">
+                <section className="relative h-[70vh] bg-gray-500">
                     <img src="https://images.unsplash.com/photo-1561501900-3701fa6a0864?w=1600&h=900&fit=crop" alt="Luxury resort pool" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center p-4">
                         <h1 className="font-cinzel text-h1-sm sm:text-h1 text-white">Your Heritage Awaits</h1>
