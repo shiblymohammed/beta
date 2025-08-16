@@ -107,7 +107,7 @@ const DiningSection: React.FC = () => {
   const galleryImages: GalleryImage[] = [
     { id: 1, src: "./images/Dining/hall2.jpg", label: "The Grand Dining Hall", span: "lg:col-span-2 lg:row-span-2" },
     { id: 2, src: "./images/Dining/varanda1.jpg", label: "The Heritage Kitchen", span: "" },
-    { id: 3, src: "./images/Dining/varanda2.jpg", label: "The Garden Veranda", span: "" },
+    { id: 3, src: "./images/Dining/SAJAN-9.webp", label: "The Garden Veranda", span: "" },
   ];
 
   useEffect(() => {
