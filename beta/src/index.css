@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Smooth scrolling for the entire page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Ensure proper stacking context for fixed elements */
+body {
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar for better UX */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Ensure video elements don't interfere with animations */
+video {
+  pointer-events: none;
+}
+
+/* Smooth transitions for all animated elements */
+* {
+  transition-property: transform, opacity, filter;
+  transition-timing-function: ease-out;
+}

@@ -1,0 +1,69 @@
+{% extends "admin/base_site.html" %}
+{% load static admin_tags %} <!-- Load our custom tags -->
+
+{% block content %}
+<div id="content-main">
+    <div class="row">
+        <!-- Stat Cards -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Today's Reservations</h5>
+                    <p class="card-text display-4">{% get_todays_reservations_count %}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Menu Items</h5>
+                    <p class="card-text display-4">{% get_total_menu_items %}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Quick Actions</h5>
+                    <a href="{% url 'admin:menu_menuitem_add' %}" class="btn btn-primary mt-2">+ Add New Dish</a>
+                    <a href="{% url 'admin:menu_reservation_changelist' %}" class="btn btn-secondary mt-2">View All Bookings</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent New Reservations -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5><i class="fas fa-bell"></i> Recent New Bookings</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Guest Name</th>
+                        <th>Time</th>
+                        <th>Guests</th>
+                        <th>Booked On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% get_new_reservations as new_reservations %}
+                    {% for res in new_reservations %}
+                    <tr>
+                        <td><a href="{% url 'admin:menu_reservation_change' res.id %}">{{ res.full_name }}</a></td>
+                        <td>{{ res.reservation_time }}</td>
+                        <td>{{ res.number_of_guests }}</td>
+                        <td>{{ res.booking_date|date:"Y-m-d H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No new reservations.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

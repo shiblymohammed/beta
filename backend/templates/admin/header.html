@@ -1,0 +1,19 @@
+<!-- templates/admin/header.html -->
+{% extends "jazzmin/partials/_header.html" %}
+
+{% block user_panel %}
+    <!-- Notification Bell -->
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'admin:menu_reservation_changelist' %}?status__exact=new" id="notification-bell-link" title="View New Reservations">
+            <i class="fas fa-bell" id="notification-bell-icon"></i>
+            <span class="badge badge-danger navbar-badge" id="notification-dot" style="display: none;"></span>
+        </a>
+    </li>
+    <!-- Mute Button -->
+    <li class="nav-item">
+        <a class="nav-link" href="#" id="notification-mute-btn" title="Mute Notifications">
+            <i class="fas fa-volume-up" id="volume-icon"></i>
+        </a>
+    </li>
+    {{ block.super }}
+{% endblock %}

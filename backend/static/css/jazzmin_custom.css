@@ -1,0 +1,62 @@
+/* static/css/jazzmin_custom.css */
+
+/* ... (keep the @import and font styles from the previous version) ... */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:wght@700&family=Cormorant+Garamond:wght@400;700&family=Poppins&display=swap');
+/* ... font styles ... */
+
+/* --- STYLES FOR NEW UI ENHANCEMENTS --- */
+
+/* Contextual Action Bar */
+#contextual-action-bar {
+    position: fixed;
+    bottom: -100px; /* Start hidden */
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    padding: 1rem 2rem;
+    background-color: #3A4A3E; /* text.heading */
+    color: #FBF9F6; /* text.on-color */
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px 0 rgba(0, 0, 0, 0.2);
+    transition: bottom 0.3s ease-in-out;
+    z-index: 1050;
+}
+
+#contextual-action-bar.active {
+    bottom: 20px; /* Animate in */
+}
+
+.action-bar-content {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+#selected-counter {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
+/* Styled Checkbox Filters */
+#changelist-filter {
+    background-color: #fff;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 14px 0 rgba(220, 215, 201, 0.25);
+}
+
+#changelist-filter h3 {
+    font-family: 'Playfair Display', serif;
+    border-bottom: 2px solid #EDE8DA;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+#changelist-filter ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+#changelist-filter li {
+    margin-bottom: 0.5rem;
+}
