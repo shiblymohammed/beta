@@ -1,622 +1,556 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, Clock, Users, ShoppingBag, Trash2 } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 
-// =================================================================
-// == 1. TYPE DEFINITIONS
-// =================================================================
+// Import the full menu data from your separate file
+// Make sure the path './components/menuData.ts' is correct for your project structure.
+import { fullMenuData } from '../components/menuData';
+
+// HELPER DATA & TYPES -------------------------------------------------
+
+// Internal type for processed menu items, without the 'id' and 'category'
 interface MenuItem {
-  id: number;
   name: string;
   description: string;
-  price: string;
+  price: number;
+}
+
+// Type for the categorized menu structure used in the UI
+interface MenuCategory {
+  category: string;
   image: string;
-  is_signature: boolean;
-  is_daily: boolean;
+  items: MenuItem[];
 }
 
-interface CartItem extends MenuItem {
-  quantity: number;
-}
+// This function assigns a relevant Unsplash image based on the category name
+const getCategoryImage = (category: string): string => {
+    const categoryImages: Record<string, string> = {
+        "Today's Specials": 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?q=80&w=2787&auto=format&fit=crop',
+        'Soup & Salad': 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=2940&auto=format&fit=crop',
+        'Appetizers': 'https://images.unsplash.com/photo-1565299543923-37dd37887442?q=80&w=2881&auto=format&fit=crop',
+        'Main Course - Kathakali': 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=2865&auto=format&fit=crop',
+        'Nostalgia - Heritage': 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?q=80&w=2899&auto=format&fit=crop',
+        'Oriental': 'https://images.unsplash.com/photo-1585523189839-a78244a48910?q=80&w=2940&auto=format&fit=crop',
+        'Continental': 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=2940&auto=format&fit=crop',
+        'Indian & Tandoor': 'https://images.unsplash.com/photo-1598515214211-89d3c7373058?q=80&w=2940&auto=format&fit=crop',
+        'Pasta': 'https://images.unsplash.com/photo-1598866594240-a3b5a950de65?q=80&w=2787&auto=format&fit=crop',
+        'Rice & Bread': 'https://images.unsplash.com/photo-1599518559350-213a353a1532?q=80&w=2803&auto=format&fit=crop',
+        'Combo Meals': 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=2940&auto=format&fit=crop',
+        'Vegetarian Delicacies': 'https://images.unsplash.com/photo-1490645935967-10de6ba17025?q=80&w=2940&auto=format&fit=crop',
+        'Regional Cuisine': 'https://images.unsplash.com/photo-1563379926898-05f4575a457f?q=80&w=2862&auto=format&fit=crop',
+        'Desserts': 'https://images.unsplash.com/photo-1567684014762-b8a5931a2887?q=80&w=2787&auto=format&fit=crop',
+        'Beverages': 'https://images.unsplash.com/photo-1542871793-1e93c4a69182?q=80&w=2787&auto=format&fit=crop',
+    };
+    return categoryImages[category] || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=2940&auto=format&fit=crop';
+};
 
-// =================================================================
-// == 2. FALLBACK MENU DATA (Signature Dishes from DiningSection)
-// =================================================================
-const fallbackSignatureDishes: MenuItem[] = [
-  {
-    id: 1,
-    name: "Chicken Mushroom Varutharathathu",
-    description: "A classic Keralan curry with toasted coconut.",
-    price: "420",
-    image: "/images/Dining/chickenmushroom.jpg",
-    is_signature: true,
-    is_daily: false
-  },
-  {
-    id: 2,
-    name: "Niagara Chicken",
-    description: "A fiery and tangy dry chicken preparation.",
-    price: "380",
-    image: "/images/Dining/niagrachicken.jpg",
-    is_signature: true,
-    is_daily: false
-  },
-  {
-    id: 3,
-    name: "Beef Ularthiyathu",
-    description: "Slow-roasted beef with fried coconut slivers.",
-    price: "450",
-    image: "/images/Dining/beefularthiyathu.jpg",
-    is_signature: true,
-    is_daily: false
-  },
-  {
-    id: 4,
-    name: "Meen Pollichathu",
-    description: "Spiced fish wrapped in banana leaf and pan-fried.",
-    price: "520",
-    image: "/images/Dining/meenpollichathu.jpg",
-    is_signature: true,
-    is_daily: false
-  },
-  {
-    id: 5,
-    name: "Prawn Mango Curry",
-    description: "A coastal curry balancing sweet and tangy flavors.",
-    price: "480",
-    image: "/images/Dining/prawnmango.jpg",
-    is_signature: true,
-    is_daily: false
-  }
+const reviews = [
+    { name: 'Alexandra Chen', quote: "An absolute culinary masterpiece. The Beef Roast was cooked to perfection. The ambiance and service were second to none. A truly unforgettable experience." },
+    { name: 'Benjamin Carter', quote: "The 'Meen Pollichathu' was divine. Every dish is a work of art. This is not just a meal; it's a journey for the senses. We'll be back very soon!" },
+    { name: 'Sophia Rodriguez', quote: "From the moment we walked in, we were treated like royalty. The attention to detail is astonishing. The Vancho Pudding is a must-try!" },
 ];
 
-// =================================================================
-// == 3. ANIMATION VARIANTS
-// =================================================================
-const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.2,
-        },
-    },
-};
+const services = [
+    { name: 'Private Dining', description: 'Elegant private rooms for your special occasions and corporate events.' },
+    { name: 'Expert Catering', description: 'Bring our award-winning cuisine to your event with our bespoke catering services.' },
+    { name: 'Online Reservations', description: 'Book your table effortlessly through our seamless online system.' },
+    { name: 'Valet Parking', description: 'Complimentary valet service for a hassle-free dining experience.' },
+];
 
-const fadeInItem = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.6, ease: 'easeOut' },
-    },
-};
+const galleryItems = [
+    { type: 'image', src: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=2787&auto=format&fit=crop' },
+    { type: 'video', src: 'https://videos.pexels.com/video-files/3209828/3209828-hd_1080_1920_25fps.mp4' },
+    { type: 'image', src: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=2881&auto=format&fit=crop' },
+    { type: 'image', src: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=2940&auto=format&fit=crop' },
+    { type: 'image', src: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?q=80&w=2940&auto=format&fit=crop' },
+    { type: 'video', src: 'https://videos.pexels.com/video-files/5943792/5943792-hd_1080_1920_30fps.mp4' },
+];
 
-// =================================================================
-// == 4. SUB-COMPONENTS
-// =================================================================
 
-const MenuItemCard: React.FC<{ item: MenuItem; onAddToCart: (item: MenuItem) => void; }> = ({ item, onAddToCart }) => {
+// Reusable Components -----------------------------------------------
+
+const OrderButton: React.FC = () => (
+    <motion.button 
+        className="px-6 py-2 bg-action-accent text-text-on-color font-poppins font-semibold rounded-md shadow-heritage hover:bg-action-accent-hover transition-colors duration-300 relative overflow-hidden"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+    >
+        Order
+        <motion.div 
+            className="absolute top-0 left-0 w-full h-full bg-white/20"
+            initial={{ x: "-100%" }}
+            whileHover={{ x: "100%" }}
+            transition={{ duration: 0.7, ease: "easeInOut" }}
+            style={{ mixBlendMode: 'soft-light' }}
+        />
+    </motion.button>
+);
+
+// Section Components --------------------------------------------------
+
+const HeroSection: React.FC = () => {
+    const targetRef = useRef<HTMLDivElement>(null);
+    const { scrollYProgress } = useScroll({
+        target: targetRef,
+        offset: ['start start', 'end start'],
+    });
+
+    const textY = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
+    const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+
     return (
-        <motion.div
-            variants={fadeInItem}
-            className="group relative flex flex-col overflow-hidden rounded-2xl bg-background-secondary shadow-heritage transition-shadow duration-300 hover:shadow-heritage-lg"
-        >
-            {item.is_signature && (
-                <div className="absolute top-4 right-4 z-10 rounded-full bg-action-accent px-3 py-1 text-xs font-semibold uppercase tracking-wider text-text-on-color font-poppins">
-                    Signature
-                </div>
-            )}
-            <div className="overflow-hidden">
+        <div ref={targetRef} className="h-screen relative">
+            <div className="sticky top-0 h-screen flex items-center justify-center">
                 <img
-                    src={item.image}
-                    alt={item.name}
-                    className="h-56 w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    src="https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2940&auto=format&fit=crop"
+                    alt="Elegant restaurant interior"
+                    className="absolute inset-0 w-full h-full object-cover"
                 />
-            </div>
-            <div className="flex flex-grow flex-col p-6">
-                <h3 className="text-h4 font-playfair text-text-heading">{item.name}</h3>
-                <p className="mt-2 flex-grow font-cormorant text-base leading-relaxed text-text-subtle">{item.description}</p>
-                <div className="mt-4 flex items-center justify-between">
-                    <span className="text-xl font-bold font-poppins text-text-heading">${parseFloat(item.price).toFixed(2)}</span>
-                    <motion.button
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => onAddToCart(item)}
-                        className="rounded-full bg-action-primary p-2 text-text-on-color transition-colors hover:bg-action-primary-hover focus:outline-none focus:ring-2 focus:ring-action-accent/50 focus:ring-offset-2 focus:ring-offset-background-secondary"
-                        aria-label={`Add ${item.name} to cart`}
+                <div className="absolute inset-0 bg-black/50" />
+                <motion.div 
+                    style={{ y: textY, opacity }}
+                    className="relative text-center text-white p-4 z-10"
+                >
+                    <motion.h1 
+                        className="font-cinzel text-h1-sm sm:text-h1 text-text-on-color"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
                     >
-                        <Plus size={20} />
-                    </motion.button>
-                </div>
+                        Amritha Heritage
+                    </motion.h1>
+                    <motion.p 
+                        className="font-cormorant text-body max-w-2xl mx-auto mt-4"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.4 }}
+                    >
+                        Where culinary tradition meets modern elegance. A timeless dining experience crafted with the finest ingredients and a passion for flavor.
+                    </motion.p>
+                </motion.div>
             </div>
-        </motion.div>
+        </div>
     );
 };
 
-const ReservationModal: React.FC<{
-    isOpen: boolean;
-    onClose: () => void;
-    cart: CartItem[];
-    time: string;
-    guests: number;
-    onBookingSuccess: () => void;
-    onRemoveItem: (id: number) => void;
-}> = ({ isOpen, onClose, cart, time, guests, onBookingSuccess, onRemoveItem }) => {
-    
-    const [fullName, setFullName] = useState('');
-    const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-
-    const handleSubmit = async (event: React.FormEvent) => {
-        event.preventDefault();
-        if (cart.length === 0) {
-            setError("Your cart is empty. Please add items before booking.");
-            return;
-        }
-        setIsSubmitting(true);
-        setError(null);
-
-        const reservationData = {
-            full_name: fullName,
-            email: email,
-            phone_number: phone,
-            number_of_guests: guests,
-            reservation_time: time,
-            selected_dishes: cart,
-        };
-
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/reservations/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(reservationData),
-            });
-
-            if (!response.ok) {
-                throw new Error('Booking failed. Please check your details and try again.');
-            }
-
-            onBookingSuccess();
-            onClose();
-
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
+const DailySpecialsSection: React.FC<{ specials: MenuItem[] }> = ({ specials }) => {
     return (
-        <AnimatePresence>
-            {isOpen && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={onClose}
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
-                >
-                    <motion.div
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.9, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: 'easeOut' }}
-                        onClick={(e) => e.stopPropagation()}
-                        className="relative w-full max-w-lg rounded-3xl bg-background p-8 shadow-heritage-lg border border-border-soft"
+        <section className="py-24 bg-background-DEFAULT relative z-20">
+            <div className="container mx-auto px-4">
+                <div className="grid md:grid-cols-2 gap-12 items-center">
+                    <motion.div 
+                        className="w-full h-full"
+                        initial={{ opacity: 0, x: -50 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ duration: 0.8 }}
                     >
-                        <button onClick={onClose} className="absolute top-4 right-4 text-text-subtle transition-colors hover:text-text-heading" aria-label="Close reservation form">
-                            <X size={24} />
-                        </button>
-                        <h2 className="text-h3-sm sm:text-h3 font-playfair text-center text-text-heading">Confirm Your Reservation</h2>
-                        
-                        {/* NEW: Order Summary Section */}
-                        <div className="my-6 max-h-48 overflow-y-auto rounded-lg border border-border-soft p-4 space-y-3">
-                            {cart.length > 0 ? (
-                                cart.map(item => (
-                                    <div key={item.id} className="flex items-center justify-between text-sm">
+                        <img 
+                            src="https://images.unsplash.com/photo-1482049016688-2d3e1b311543?q=80&w=2853&auto=format&fit=crop" 
+                            alt="Special dish of the day" 
+                            className="rounded-xl shadow-heritage-lg object-cover w-full h-[600px]"
+                        />
+                    </motion.div>
+                    <div>
+                        <motion.h2 
+                            className="font-playfair text-h2-sm sm:text-h2 text-text-heading mb-2"
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.7, delay: 0.2 }}
+                        >
+                            Today's Specials
+                        </motion.h2>
+                        <motion.div 
+                            className="w-24 h-1 bg-action-accent mb-8"
+                            initial={{ opacity: 0, scaleX: 0 }}
+                            whileInView={{ opacity: 1, scaleX: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.7, delay: 0.4 }}
+                        />
+                        <div className="space-y-8">
+                            {specials.map((item, index) => (
+                                <motion.div 
+                                    key={item.name + index}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.6, delay: 0.5 + index * 0.1 }}
+                                >
+                                    <div className="flex justify-between items-center">
                                         <div>
-                                            <p className="font-bold text-text-heading">{item.name} <span className="font-normal text-text-subtle">x{item.quantity}</span></p>
+                                            <h3 className="font-playfair text-h4 text-text-heading">{item.name}</h3>
+                                            <p className="font-cormorant text-body text-text-subtle max-w-md">{item.description}</p>
                                         </div>
-                                        <div className="flex items-center gap-4">
-                                            <p className="text-text">${(parseFloat(item.price) * item.quantity).toFixed(2)}</p>
-                                            <button onClick={() => onRemoveItem(item.id)} className="text-red-400 hover:text-red-600">
-                                                <Trash2 size={16} />
-                                            </button>
+                                        <div className="text-right ml-4 flex-shrink-0">
+                                            <p className="font-poppins text-lg text-action-primary font-bold">₹{item.price.toFixed(2)}</p>
                                         </div>
                                     </div>
-                                ))
-                            ) : (
-                                <p className="text-center text-text-subtle">Your cart is empty.</p>
-                            )}
+                                    <div className="flex justify-end mt-2">
+                                        <OrderButton />
+                                    </div>
+                                    <div className="mt-4 border-b border-border-soft"></div>
+                                </motion.div>
+                            ))}
                         </div>
-
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label htmlFor="name" className="block text-sm font-medium font-poppins text-text-subtle">Full Name</label>
-                                <input type="text" id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} required className="mt-1 block w-full rounded-md border-border-soft bg-background-secondary px-3 py-2 focus:border-action-primary focus:outline-none focus:ring-2 focus:ring-action-primary/50" />
-                            </div>
-                            <div>
-                                <label htmlFor="email" className="block text-sm font-medium font-poppins text-text-subtle">Email Address</label>
-                                <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="mt-1 block w-full rounded-md border-border-soft bg-background-secondary px-3 py-2 focus:border-action-primary focus:outline-none focus:ring-2 focus:ring-action-primary/50" />
-                            </div>
-                            <div>
-                                <label htmlFor="phone" className="block text-sm font-medium font-poppins text-text-subtle">Phone Number</label>
-                                <input type="tel" id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} required className="mt-1 block w-full rounded-md border-border-soft bg-background-secondary px-3 py-2 focus:border-action-primary focus:outline-none focus:ring-2 focus:ring-action-primary/50" />
-                            </div>
-
-                            {error && <p className="text-red-500 text-center text-sm">{error}</p>}
-
-                            <motion.button
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="w-full rounded-lg bg-action-accent py-3 font-bold text-text-on-color transition-all duration-300 hover:bg-action-accent-hover hover:shadow-interactive disabled:opacity-50"
-                            >
-                                {isSubmitting ? 'Booking...' : 'Confirm & Reserve'}
-                            </motion.button>
-                        </form>
-                    </motion.div>
-                </motion.div>
-            )}
-        </AnimatePresence>
-    );
-};
-
-
-// =================================================================
-// == 5. MAIN DINING PAGE COMPONENT
-// =================================================================
-const DiningPage: React.FC = () => {
-    const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    
-    const [cart, setCart] = useState<CartItem[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [reservationTime, setReservationTime] = useState('7:00 PM');
-    const [guestCount, setGuestCount] = useState(2);
-    
-    const location = useLocation();
-    const [showPreSelectionMessage, setShowPreSelectionMessage] = useState(false);
-    const [preSelectedDish, setPreSelectedDish] = useState<MenuItem | null>(null);
-
-    useEffect(() => {
-        const fetchMenu = async () => {
-            try {
-                const response = await fetch('http://127.0.0.1:8000/api/menu/');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data: MenuItem[] = await response.json();
-                setMenuItems(data);
-            } catch (err: any) {
-                console.log('Using fallback menu data due to API error:', err.message);
-                // Use fallback signature dishes when API fails
-                setMenuItems(fallbackSignatureDishes);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchMenu();
-    }, []);
-
-    // Handle pre-selected dish from navigation
-    useEffect(() => {
-        if (location.state?.preSelectedDish) {
-            const dishData = location.state.preSelectedDish;
-            
-            // Convert the dish to MenuItem format and add to cart
-            const menuItem: MenuItem = {
-                id: dishData.id,
-                name: dishData.name,
-                description: dishData.description,
-                price: dishData.price,
-                image: dishData.image,
-                is_signature: true,
-                is_daily: false
-            };
-            
-            // Store the pre-selected dish in local state
-            setPreSelectedDish(menuItem);
-            
-            // Add to cart
-            setCart([{ ...menuItem, quantity: 1 }]);
-            
-            // Show success message
-            setShowPreSelectionMessage(true);
-            
-            // Auto-scroll to cart section
-            setTimeout(() => {
-                const cartElement = document.querySelector('.fixed.bottom-4');
-                if (cartElement) {
-                    cartElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 500);
-            
-            // Clear the navigation state
-            window.history.replaceState({}, document.title);
-        }
-    }, [location.state]);
-
-    const handleAddToCart = (item: MenuItem) => {
-        setCart((prevCart) => {
-            const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
-            if (existingItem) {
-                return prevCart.map((cartItem) =>
-                    cartItem.id === item.id ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem
-                );
-            }
-            return [...prevCart, { ...item, quantity: 1 }];
-        });
-    };
-
-    const handleRemoveFromCart = (id: number) => {
-        setCart((prevCart) => {
-            const existingItem = prevCart.find((item) => item.id === id);
-            if (existingItem && existingItem.quantity > 1) {
-                // Decrease quantity
-                return prevCart.map((item) =>
-                    item.id === id ? { ...item, quantity: item.quantity - 1 } : item
-                );
-            } else {
-                // Remove item completely
-                return prevCart.filter((item) => item.id !== id);
-            }
-        });
-    };
-    
-    const { totalItems, totalPrice } = useMemo(() => {
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        const totalPrice = cart.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0).toFixed(2);
-        return { totalItems, totalPrice };
-    }, [cart]);
-
-    // Combine API data with fallback signature dishes
-    const dailyMenu = useMemo(() => menuItems.filter(item => item.is_daily), [menuItems]);
-    const signatureMenu = useMemo(() => {
-        const apiSignatureItems = menuItems.filter(item => item.is_signature);
-        // If no signature items from API, use fallback dishes
-        if (apiSignatureItems.length === 0) {
-            return fallbackSignatureDishes;
-        }
-        // Combine API signature items with fallback dishes (avoiding duplicates)
-        const combinedItems = [...apiSignatureItems];
-        fallbackSignatureDishes.forEach(fallbackItem => {
-            if (!combinedItems.find(item => item.name === fallbackItem.name)) {
-                combinedItems.push(fallbackItem);
-            }
-        });
-        return combinedItems;
-    }, [menuItems]);
-
-    const handleBookingSuccess = () => {
-        alert('Your table has been booked successfully! A confirmation email has been sent.');
-        setCart([]);
-    };
-
-    if (isLoading) {
-        return (
-            <div className="flex h-screen flex-col items-center justify-center bg-background text-text-heading">
-                <h2 className="text-h3 font-playfair animate-pulse-subtle">Loading Culinary Delights...</h2>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="flex h-screen flex-col items-center justify-center bg-background-secondary p-8 text-text-subtle">
-                <h2 className="text-h3 font-playfair text-text-heading">Something went wrong</h2>
-                <p className="mt-2 font-cormorant">Could not load the menu. Please ensure the backend server is running.</p>
-                <p className="mt-1 font-mono text-sm">Error: {error}</p>
-            </div>
-        );
-    }
-    
-    return (
-        <>
-            <header className="relative flex h-screen items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 z-10 bg-black/60"></div>
-                <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1974&q=80" alt="Elegant restaurant interior" className="absolute inset-0 h-full w-full object-cover"/>
-                <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-                    className="relative z-20 text-center text-text-on-color"
-                >
-                    <h1 className="font-cinzel text-4xl font-bold uppercase tracking-widest sm:text-5xl md:text-7xl lg:text-8xl">
-                        Heritage Dining
-                    </h1>
-                    <p className="mt-4 text-lg tracking-wider md:text-xl">
-                        A Culinary Journey Through Time & Tradition.
-                    </p>
-                    <motion.a 
-                        href="#menu" 
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="mt-8 inline-block rounded-md bg-action-primary px-10 py-4 font-poppins text-lg font-semibold text-text-on-color transition-colors hover:bg-action-primary-hover"
-                    >
-                        Explore The Menu
-                    </motion.a>
-                </motion.div>
-            </header>
-
-            {/* Pre-selection Success Message */}
-            {showPreSelectionMessage && (
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-action-accent/90 backdrop-blur-sm text-text-on-color px-6 py-3 rounded-xl shadow-lg border border-action-accent/20"
-                >
-                    <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                        <p className="font-poppins font-medium">
-                            🎉 Dish added to your cart! Ready to make a reservation?
-                        </p>
-                        <button
-                            onClick={() => setShowPreSelectionMessage(false)}
-                            className="ml-2 text-text-on-color/70 hover:text-text-on-color transition-colors"
-                        >
-                            <X size={16} />
-                        </button>
                     </div>
-                </motion.div>
-            )}
-
-            <main className="container mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Featured Signature Dishes Section */}
-                <section id="signature-dishes" className="py-20 md:py-28 scroll-mt-20">
-                    <motion.div 
-                         initial="hidden"
-                         whileInView="visible"
-                         viewport={{ once: true, amount: 0.3 }}
-                         variants={fadeInItem}
-                         className="text-center mb-16"
-                    >
-                        <h2 className="text-h2 font-playfair text-text-heading mb-6">Our Heritage Signature Dishes</h2>
-                        <p className="text-lg text-text-subtle max-w-3xl mx-auto">
-                            Experience the authentic flavors of Kerala with our carefully curated signature dishes, 
-                            each telling a story of tradition and culinary excellence.
-                        </p>
-                    </motion.div>
-                    
-                    <motion.div 
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, amount: 0.1 }}
-                        variants={staggerContainer}
-                        className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
-                    >
-                        {fallbackSignatureDishes.map((item) => (
-                            <MenuItemCard key={item.id} item={item} onAddToCart={handleAddToCart} />
-                        ))}
-                    </motion.div>
-                </section>
-
-                <section id="menu" className="py-20 md:py-28 scroll-mt-20">
-                    <motion.div 
-                         initial="hidden"
-                         whileInView="visible"
-                         viewport={{ once: true, amount: 0.3 }}
-                         variants={fadeInItem}
-                         className="text-center mb-12"
-                    >
-                        <h2>Today's Specials</h2>
-                        <p className="mt-2 text-lg text-text-subtle">Freshly crafted by our chefs for today.</p>
-                    </motion.div>
-                    <motion.div 
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, amount: 0.1 }}
-                        variants={staggerContainer}
-                        className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
-                    >
-                        {dailyMenu.length > 0 ? (
-                            dailyMenu.map((item) => (
-                                <MenuItemCard key={item.id} item={item} onAddToCart={handleAddToCart} />
-                            ))
-                        ) : (
-                            <p className="col-span-full text-center text-text-subtle">No specials available today. Please check back later.</p>
-                        )}
-                    </motion.div>
-                </section>
-
-                <section className="py-20 md:py-28">
-                    <motion.div
-                         initial="hidden"
-                         whileInView="visible"
-                         viewport={{ once: true, amount: 0.3 }}
-                         variants={fadeInItem}
-                         className="text-center mb-12"
-                    >
-                        <h2>Our Signatures</h2>
-                        <p className="mt-2 text-lg text-text-subtle">The timeless classics that define our legacy.</p>
-                    </motion.div>
-                    <motion.div 
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, amount: 0.1 }}
-                        variants={staggerContainer}
-                        className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"
-                    >
-                        {signatureMenu.map((item) => (
-                            <MenuItemCard key={item.id} item={item} onAddToCart={handleAddToCart} />
-                        ))}
-                    </motion.div>
-                </section>
-            </main>
-
-            <AnimatePresence>
-                {totalItems > 0 && (
-                    <motion.div 
-                        initial={{ y: "120%" }}
-                        animate={{ y: 0 }}
-                        exit={{ y: "120%" }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                        className="fixed bottom-4 left-4 right-4 z-40 rounded-2xl border border-border-interactive/30 bg-menu-overlay/80 p-4 text-text-on-color shadow-lg backdrop-blur-lg sm:left-auto sm:right-1/2 sm:w-auto sm:translate-x-1/2"
-                    >
-                        <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-start sm:gap-6">
-                            <div className="flex items-center gap-2 font-poppins text-sm">
-                               <ShoppingBag size={20} />
-                               <span>{totalItems} items</span>
-                               <span className="h-4 w-px bg-white/20"></span>
-                               <span>${totalPrice}</span>
-                            </div>
-                            
-                            {/* Pre-selected Dish Indicator */}
-                            {preSelectedDish && (
-                                <div className="flex items-center gap-2 bg-action-accent/20 px-3 py-1 rounded-lg border border-action-accent/30">
-                                    <div className="w-2 h-2 bg-action-accent rounded-full animate-pulse"></div>
-                                    <span className="text-xs font-medium text-action-accent">
-                                        Pre-selected: {preSelectedDish.name}
-                                    </span>
-                                </div>
-                            )}
-                            
-                            <div className="flex items-center gap-2">
-                                <Clock size={20} />
-                                <select value={reservationTime} onChange={(e) => setReservationTime(e.target.value)} className="appearance-none rounded bg-white/10 py-1 pl-2 pr-6 text-sm text-text-on-color focus:outline-none focus:ring-2 focus:ring-action-accent font-poppins">
-                                    <option>7:00 PM</option>
-                                    <option>7:30 PM</option>
-                                    <option>8:00 PM</option>
-                                    <option>8:30 PM</option>
-                                    <option>9:00 PM</option>
-                                </select>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Users size={20} />
-                                 <select value={guestCount} onChange={(e) => setGuestCount(Number(e.target.value))} className="appearance-none rounded bg-white/10 py-1 pl-2 pr-6 text-sm text-text-on-color focus:outline-none focus:ring-2 focus:ring-action-accent font-poppins">
-                                    {[...Array(8).keys()].map(i => <option key={i+1} value={i+1}>{i+1} Guest{i > 0 ? 's' : ''}</option>)}
-                                 </select>
-                            </div>
-                            <motion.button
-                                onClick={() => setIsModalOpen(true)}
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                className="w-full rounded-lg bg-action-accent px-6 py-2 font-bold transition-all duration-300 hover:bg-action-accent-hover hover:shadow-interactive sm:w-auto font-poppins"
-                            >
-                                Reserve Table
-                            </motion.button>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-            
-            <ReservationModal 
-                isOpen={isModalOpen} 
-                onClose={() => setIsModalOpen(false)}
-                cart={cart}
-                time={reservationTime}
-                guests={guestCount}
-                onBookingSuccess={handleBookingSuccess}
-                onRemoveItem={handleRemoveFromCart}
-            />
-        </>
+                </div>
+            </div>
+        </section>
     );
 };
 
-export default DiningPage;
+const MenuSection: React.FC<{ menuData: MenuCategory[] }> = ({ menuData }) => {
+    const [activeCategory, setActiveCategory] = useState(menuData[0]?.category || '');
+    const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+    const activeCatData = menuData.find(c => c.category === activeCategory);
+    
+    useEffect(() => {
+        if (!activeCategory && menuData.length > 0) {
+            setActiveCategory(menuData[0].category);
+        }
+    }, [menuData, activeCategory]);
+
+    const toggleExpand = (category: string) => {
+        setExpandedCategories(prev => ({ ...prev, [category]: !prev[category] }));
+    };
+
+    return (
+        <section className="py-24 bg-background-secondary">
+            <div className="container mx-auto px-4">
+                <motion.div 
+                    className="text-center mb-12"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.7 }}
+                >
+                    <h2 className="font-playfair text-h2-sm sm:text-h2 text-text-heading">Our Menu</h2>
+                    <p className="font-cormorant text-body text-text-subtle mt-2 max-w-2xl mx-auto">
+                        A curated selection of dishes celebrating the richness of our culinary heritage.
+                    </p>
+                </motion.div>
+
+                <div className="flex flex-col lg:flex-row gap-12">
+                    {/* Left Side - Category Cards Grid */}
+                    <div className="lg:w-2/5">
+                        <div className="grid grid-cols-2 gap-4">
+                            {menuData.map((cat, index) => (
+                                <motion.div
+                                    key={cat.category}
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                                    className={`cursor-pointer group ${
+                                        activeCategory === cat.category 
+                                            ? 'ring-2 ring-action-primary ring-offset-2 ring-offset-background-secondary' 
+                                            : ''
+                                    }`}
+                                    onClick={() => setActiveCategory(cat.category)}
+                                >
+                                    <div className="bg-background rounded-xl overflow-hidden shadow-heritage hover:shadow-heritage-lg transition-all duration-300 group-hover:scale-[1.02]">
+                                        {/* Category Image */}
+                                        <div className="relative h-32 overflow-hidden">
+                                            <img 
+                                                src={cat.image} 
+                                                alt={cat.category} 
+                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                            />
+                                            {/* Overlay for active state */}
+                                            {activeCategory === cat.category && (
+                                                <div className="absolute inset-0 bg-action-primary/20 flex items-center justify-center">
+                                                    <div className="bg-action-primary text-text-on-color rounded-full p-2">
+                                                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                        
+                                        {/* Category Info */}
+                                        <div className="p-4">
+                                            <h3 className="font-playfair text-lg font-semibold text-text-heading mb-2 line-clamp-2">
+                                                {cat.category}
+                                            </h3>
+                                            <p className="font-cormorant text-sm text-text-subtle line-clamp-2">
+                                                {cat.items.length} delicious dishes to explore
+                                            </p>
+                                            
+                                            {/* Item count badge */}
+                                            <div className="mt-3 flex items-center justify-between">
+                                                <span className="text-xs font-poppins text-action-accent bg-action-accent/10 px-2 py-1 rounded-full">
+                                                    {cat.items.length} items
+                                                </span>
+                                                {activeCategory === cat.category && (
+                                                    <span className="text-xs font-poppins text-action-primary bg-action-primary/10 px-2 py-1 rounded-full">
+                                                        Active
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    {/* Right Side - Menu Listing */}
+                    <div className="lg:w-3/5">
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={activeCategory}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.5 }}
+                                className="bg-background rounded-xl p-6 shadow-heritage"
+                            >
+                                {/* Category Header */}
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="w-16 h-16 rounded-full overflow-hidden">
+                                        <img 
+                                            src={activeCatData?.image} 
+                                            alt={activeCatData?.category} 
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-playfair text-h3-sm text-text-heading">{activeCatData?.category}</h3>
+                                        <p className="font-cormorant text-body text-text-subtle">
+                                            {activeCatData?.items.length} carefully crafted dishes
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                {/* Menu Items */}
+                                <div className="space-y-6">
+                                    {(expandedCategories[activeCategory] ? activeCatData?.items : activeCatData?.items.slice(0, 8))?.map((item, index) => (
+                                        <motion.div 
+                                            key={item.name + index}
+                                            initial={{ opacity: 0, x: 20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ duration: 0.3, delay: index * 0.05 }}
+                                            className="border-b border-border-soft pb-4 last:border-b-0"
+                                        >
+                                            <div className="flex justify-between items-start">
+                                                <div className="flex-1">
+                                                    <h4 className="font-playfair text-xl text-text-heading">{item.name}</h4>
+                                                    <p className="font-cormorant text-base text-text-subtle mt-1">{item.description}</p>
+                                                </div>
+                                                <div className="flex flex-col items-end gap-2 ml-4">
+                                                    <p className="font-poppins text-lg text-action-primary font-bold">₹{item.price.toFixed(2)}</p>
+                                                    <OrderButton />
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                                
+                                {/* Expand/Collapse Button */}
+                                {activeCatData && activeCatData.items.length > 8 && (
+                                    <div className="mt-8 text-center">
+                                        <motion.button 
+                                            onClick={() => toggleExpand(activeCategory)}
+                                            className="font-poppins font-semibold text-action-primary hover:text-action-primary-hover transition-colors px-6 py-3 rounded-lg border border-action-primary/20 hover:border-action-primary/40 hover:bg-action-primary/5"
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                        >
+                                            {expandedCategories[activeCategory] ? 'Show Less' : `Show All ${activeCatData.items.length} Dishes`}
+                                        </motion.button>
+                                    </div>
+                                )}
+                            </motion.div>
+                        </AnimatePresence>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+};
+
+const ReviewsSection: React.FC = () => {
+    return (
+        <section className="py-24 bg-background-DEFAULT">
+            <div className="container mx-auto px-4">
+                <motion.div 
+                    className="text-center mb-12"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.7 }}
+                >
+                    <h2 className="font-playfair text-h2-sm sm:text-h2 text-text-heading">What Our Guests Say</h2>
+                    <div className="w-24 h-1 bg-action-accent mx-auto mt-4"></div>
+                </motion.div>
+                <div className="grid md:grid-cols-3 gap-8">
+                    {reviews.map((review, index) => (
+                        <motion.div 
+                            key={index} 
+                            className="bg-background-secondary p-8 rounded-xl shadow-heritage"
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, delay: index * 0.15 }}
+                        >
+                            <p className="font-cormorant text-body text-text-DEFAULT italic">"{review.quote}"</p>
+                            <p className="font-cinzel text-lg text-text-heading mt-6 font-semibold">- {review.name}</p>
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+};
+
+const ServicesSection: React.FC = () => {
+    return (
+        <section className="py-24 bg-background-tertiary">
+            <div className="container mx-auto px-4">
+                <motion.div 
+                    className="text-center mb-12"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.7 }}
+                >
+                    <h2 className="font-playfair text-h2-sm sm:text-h2 text-text-heading">Our Services</h2>
+                    <p className="font-cormorant text-body text-text-subtle mt-2">Exceeding expectations, one detail at a time.</p>
+                </motion.div>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {services.map((service, index) => (
+                        <motion.div 
+                            key={index} 
+                            className="text-center p-6"
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, delay: index * 0.15 }}
+                        >
+                            <h3 className="font-playfair text-h4 text-text-heading">{service.name}</h3>
+                            <p className="font-cormorant text-body text-text-subtle mt-2">{service.description}</p>
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+};
+
+const GallerySection: React.FC = () => {
+    return (
+        <section className="py-24 bg-background-DEFAULT">
+            <div className="container mx-auto px-4">
+                <motion.div 
+                    className="text-center mb-12"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.7 }}
+                >
+                    <h2 className="font-playfair text-h2-sm sm:text-h2 text-text-heading">A Feast for the Eyes</h2>
+                    <div className="w-24 h-1 bg-action-accent mx-auto mt-4"></div>
+                </motion.div>
+                <div className="columns-2 md:columns-3 gap-4">
+                    {galleryItems.map((item, index) => (
+                        <motion.div 
+                            key={index} 
+                            className="mb-4 break-inside-avoid"
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, amount: 0.2 }}
+                            transition={{ duration: 0.6, delay: index * 0.1 }}
+                        >
+                            {item.type === 'image' ? (
+                                <img src={item.src} alt={`Gallery item ${index + 1}`} className="w-full h-auto rounded-lg shadow-heritage" />
+                            ) : (
+                                <video src={item.src} loop autoPlay muted playsInline className="w-full h-auto rounded-lg shadow-heritage"></video>
+                            )}
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+};
+
+const Footer: React.FC = () => {
+    return (
+        <footer className="bg-menu-overlay text-text-on-color py-16">
+            <div className="container mx-auto px-4 text-center">
+                <h3 className="font-cinzel text-h3-sm">Amritha Heritage</h3>
+                <p className="font-cormorant text-body mt-4">123 Culinary Lane, Flavor Town, 12345</p>
+                <p className="font-cormorant text-body mt-2">(123) 456-7890 | contact@amrithaheritage.com</p>
+                <div className="mt-8">
+                    <button className="font-poppins font-semibold bg-action-accent text-text-on-color px-8 py-3 rounded-md hover:bg-action-accent-hover transition-colors">
+                        Make a Reservation
+                    </button>
+                </div>
+            </div>
+        </footer>
+    );
+};
+
+
+// Main App Component --------------------------------------------------
+
+export default function App() {
+  // This hook transforms the flat menu data into the categorized structure needed by the components.
+  const { categorizedMenu, specials } = useMemo(() => {
+    // Create "Today's Specials" from the first 3 items in the full menu
+    const specialItems: MenuItem[] = fullMenuData.slice(0, 3).map(item => ({
+        name: item.name,
+        description: item.description,
+        price: item.price,
+    }));
+    
+    // Group the rest of the menu items by category
+    const menuMap = fullMenuData.reduce<Record<string, MenuItem[]>>((acc, item) => {
+        if (!acc[item.category]) {
+            acc[item.category] = [];
+        }
+        acc[item.category].push({
+            name: item.name,
+            description: item.description,
+            price: item.price,
+        });
+        return acc;
+    }, {});
+
+    // Get a unique, ordered list of category names from the original data
+    const orderedCategoryNames = [...new Set(fullMenuData.map(item => item.category))];
+
+    // Format the grouped data into the MenuCategory array structure, maintaining the original order
+    const categorized = orderedCategoryNames.map(categoryName => ({
+        category: categoryName,
+        image: getCategoryImage(categoryName),
+        items: menuMap[categoryName],
+    }));
+
+    // Add "Today's Specials" as the first category in the main menu list
+    const finalCategorizedMenu: MenuCategory[] = [
+        {
+            category: "Today's Specials",
+            image: getCategoryImage("Today's Specials"),
+            items: specialItems,
+        },
+        ...categorized,
+    ];
+
+    return { categorizedMenu: finalCategorizedMenu, specials: specialItems };
+  }, []); // Empty dependency array means this runs only once.
+
+  return (
+    <div className="bg-background-DEFAULT">
+      <main>
+        <HeroSection />
+        <DailySpecialsSection specials={specials} />
+        <MenuSection menuData={categorizedMenu} />
+        <ReviewsSection />
+        <ServicesSection />
+        <GallerySection />
+      </main>
+      <Footer />
+    </div>
+  );
+}
