@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { menuData } from '../components/menuData';
-import type { MenuItem, MenuCategory } from '../components/menuData';
-import { motion, AnimatePresence, useInView, useScroll, useTransform } from 'framer-motion';
-import { FiChevronDown, FiChevronLeft, FiChevronRight, FiStar, FiX, FiShoppingCart, FiPlus, FiMinus, FiClock, FiUsers, FiMapPin, FiPhone, FiMail, FiMessageSquare } from 'react-icons/fi';
+import type { MenuItem } from '../components/menuData';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { FiChevronDown, FiChevronLeft, FiChevronRight, FiStar, FiX, FiShoppingCart, FiMapPin, FiPhone, FiMail } from 'react-icons/fi';
 
 // Mock cart hook for this simplified version
 const useCart = () => ({
-  dispatch: (...args: any[]) => {},
-  setCartOpen: (...args: any[]) => {},
+  dispatch: (_action: any) => {},
+  setCartOpen: (_isOpen: boolean) => {},
   cart: [],
   isCartOpen: false
 });
