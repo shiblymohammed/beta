@@ -12,6 +12,17 @@ export default {
       // == THEME FOUNDATION: COLORS & FONTS
       // =================================================================
       colors: {
+
+        'highlight': {
+            DEFAULT: '#C0957C', // A soft, elegant gold/bronze
+            subtle: '#DBC9B8',
+        },
+        'feedback': {
+            success: '#5A8B73', // Muted green for success states
+            error: '#B85C5C',   // Terracotta red for error states
+        },
+
+
         'background': {
           DEFAULT: '#FBF9F6',
           secondary: '#F5F0E6',
@@ -108,3 +119,8 @@ export default {
     })
   ],
 }
+
+
+
+
+
