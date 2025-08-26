@@ -1,13 +1,5 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X as CloseIcon, ChevronLeft, ChevronRight } from 'lucide-react';
-
-// Define types for better type safety
-interface GalleryImage {
-  id: number;
-  url: string;
-  alt: string;
-  category: string;
-}
 
 // This is the main gallery page component.
 // It includes a hero section, a filterable image grid, and an expanded modal with navigation.
@@ -16,14 +8,14 @@ const Gallery = () => {
   const [parallaxOffset, setParallaxOffset] = useState(0);
 
   // State for the currently selected image and its index.
-  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(null);
   
   // State for modal visibility.
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // State for the active filter category.
-  const [_activeFilter, _setActiveFilter] = useState('All');
+  const [activeFilter, setActiveFilter] = useState('All');
 
   // Array of image data for the gallery, with added categories.
   // Using working image URLs for a more dynamic and realistic look.
@@ -44,38 +36,34 @@ const Gallery = () => {
   const heroImage = "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80";
 
   // Derive a list of unique categories for the filter buttons.
-  // const categories = ['All', ...new Set(allImages.map(img => img.category))];
+  const categories = ['All', ...new Set(allImages.map(img => img.category))];
 
   // Filter images based on the active category.
-  const filteredImages = _activeFilter === 'All'
+  const filteredImages = activeFilter === 'All'
     ? allImages
-    : allImages.filter(img => img.category === _activeFilter);
+    : allImages.filter(img => img.category === activeFilter);
 
   // Function to open the modal with a specific image and its index.
-  const handleImageClick = (image: GalleryImage, index: number) => {
+  const handleImageClick = (image, index) => {
     setSelectedImage(image);
     setSelectedIndex(index);
     setIsModalOpen(true);
   };
 
   // Function to navigate to the next image in the filtered list.
-  const handleNext = (e: React.MouseEvent) => {
+  const handleNext = (e) => {
     e.stopPropagation();
-    if (selectedIndex !== null) {
-      const nextIndex = (selectedIndex + 1) % filteredImages.length;
-      setSelectedImage(filteredImages[nextIndex]);
-      setSelectedIndex(nextIndex);
-    }
+    const nextIndex = (selectedIndex + 1) % filteredImages.length;
+    setSelectedImage(filteredImages[nextIndex]);
+    setSelectedIndex(nextIndex);
   };
 
   // Function to navigate to the previous image.
-  const handlePrev = (e: React.MouseEvent) => {
+  const handlePrev = (e) => {
     e.stopPropagation();
-    if (selectedIndex !== null) {
-      const prevIndex = (selectedIndex - 1 + filteredImages.length) % filteredImages.length;
-      setSelectedImage(filteredImages[prevIndex]);
-      setSelectedIndex(prevIndex);
-    }
+    const prevIndex = (selectedIndex - 1 + filteredImages.length) % filteredImages.length;
+    setSelectedImage(filteredImages[prevIndex]);
+    setSelectedIndex(prevIndex);
   };
 
   // Function to close the modal.
@@ -151,10 +139,7 @@ const Gallery = () => {
                 src={image.url} 
                 alt={image.alt} 
                 className="w-full h-full object-cover rounded-lg"
-                onError={(e) => { 
-                  const target = e.target as HTMLImageElement;
-                  target.src = 'https://placehold.co/800x600/DCD7C9/5A594D?text=Image+Unavailable'; 
-                }}
+                onError={(e) => { e.target.src = 'https://placehold.co/800x600/DCD7C9/5A594D?text=Image+Unavailable'; }}
               />
               {/* Overlay with a transparent gradient and a descriptive text. */}
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
@@ -173,8 +158,8 @@ const Gallery = () => {
         >
           <div className="relative w-full max-w-4xl max-h-[90vh] rounded-2xl overflow-hidden shadow-heritage-lg transform animate-fade-in-up" onClick={(e) => e.stopPropagation()}>
             <img 
-              src={selectedImage?.url || ''} 
-              alt={selectedImage?.alt || ''} 
+              src={selectedImage.url} 
+              alt={selectedImage.alt} 
               className="w-full h-full object-contain rounded-2xl"
             />
             

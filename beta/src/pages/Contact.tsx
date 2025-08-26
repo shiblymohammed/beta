@@ -30,14 +30,14 @@ const Contact = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
 
   // --- Animation Logic ---
-  // const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          // setIsVisible(true);
+          setIsVisible(true);
           observer.unobserve(entry.target);
         }
       },
@@ -48,14 +48,14 @@ const Contact = () => {
     return () => { if (sectionRef.current) observer.unobserve(sectionRef.current); };
   }, []);
 
-  // const getAnimClass = (delay: number) =>
-  //   `transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`;
+  const getAnimClass = (delay: number) =>
+    `transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`;
   
   // --- Handlers ---
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-  //   const { name, value } = e.target;
-  //   setFormData(prev => ({ ...prev, [name]: value }));
-  // };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,8 +69,8 @@ const Contact = () => {
       {/* Header Section */}
       <section className="py-20 md:py-28 text-center">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 style={{transitionDelay: '100ms'}} className="transition-all duration-700 ease-out opacity-100 translate-y-0 font-cinzel text-h1-sm sm:text-h1 text-text-heading mb-4">A Direct Line to Heritage</h1>
-          <p style={{transitionDelay: '200ms'}} className="transition-all duration-700 ease-out opacity-100 translate-y-0 font-cormorant text-body text-text-subtle max-w-3xl mx-auto">
+          <h1 style={{transitionDelay: '100ms'}} className={`${getAnimClass(100)} font-cinzel text-h1-sm sm:text-h1 text-text-heading mb-4`}>A Direct Line to Heritage</h1>
+          <p style={{transitionDelay: '200ms'}} className={`${getAnimClass(200)} font-cormorant text-body text-text-subtle max-w-3xl mx-auto`}>
             Your journey begins here. Whether for a general enquiry or a specific request, our dedicated team is at your service. Let us know how we can make your experience unforgettable.
           </p>
         </div>
@@ -81,7 +81,7 @@ const Contact = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-10">
           
           {/* Column 1: Quick Enquiry Form */}
-          <div style={{transitionDelay: '300ms'}} className="transition-all duration-700 ease-out opacity-100 translate-y-0 bg-background-secondary p-8 sm:p-12 rounded-lg shadow-heritage-lg">
+          <div style={{transitionDelay: '300ms'}} className={`${getAnimClass(300)} bg-background-secondary p-8 sm:p-12 rounded-lg shadow-heritage-lg`}>
             <h2 className="font-playfair text-h2-sm sm:text-h2 text-text-heading mb-2">Quick Enquiry</h2>
             <p className="font-cormorant text-text-subtle mb-8">For general questions and messages.</p>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -104,7 +104,7 @@ const Contact = () => {
           </div>
           
           {/* Column 2: Direct Contact "Concierge Desk" */}
-          <div style={{transitionDelay: '400ms'}} className="transition-all duration-700 ease-out opacity-100 translate-y-0">
+          <div style={{transitionDelay: '400ms'}} className={`${getAnimClass(400)}`}>
             <h2 className="font-playfair text-h2-sm sm:text-h2 text-text-heading mb-2">Connect Directly</h2>
             <p className="font-cormorant text-text-subtle mb-8">Contact a specific department for a tailored response.</p>
             <div className="space-y-6">
@@ -139,16 +139,16 @@ const Contact = () => {
       <section className="bg-background-secondary py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center" style={{transitionDelay: '100ms'}}>
-                <h2 className="transition-all duration-700 ease-out opacity-100 translate-y-0 font-playfair text-h2-sm sm:text-h2 text-text-heading mb-12">Find Your Way to Us</h2>
+                <h2 className={`${getAnimClass(100)} font-playfair text-h2-sm sm:text-h2 text-text-heading mb-12`}>Find Your Way to Us</h2>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-                <div style={{transitionDelay: '200ms'}} className="transition-all duration-700 ease-out opacity-100 translate-y-0">
+                <div style={{transitionDelay: '200ms'}} className={`${getAnimClass(200)}`}>
                     <div className="w-full h-80 lg:h-96 bg-background-tertiary rounded-lg shadow-heritage-lg flex items-center justify-center">
                         {/* Replace this with an actual map embed or a styled image */}
                         
                     </div>
                 </div>
-                <div style={{transitionDelay: '300ms'}} className="transition-all duration-700 ease-out opacity-100 translate-y-0">
+                <div style={{transitionDelay: '300ms'}} className={`${getAnimClass(300)}`}>
                     <h3 className="font-playfair text-h3-sm text-text-heading">Amritha Heritage</h3>
                     <p className="font-cormorant text-body text-text mt-2">
                         Thycaud, Thiruvananthapuram, Kerala 695014, India

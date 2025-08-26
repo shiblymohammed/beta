@@ -233,7 +233,7 @@ const Hero: React.FC = () => {
               }`}
               style={{ transitionDelay: "200ms" }}
             >
-              Where History
+              Heritage Reborn,
             </span>
             <br />
             <span
@@ -242,7 +242,7 @@ const Hero: React.FC = () => {
               }`}
               style={{ transitionDelay: "400ms" }}
             >
-              <span className="italic">Meets Luxury</span>
+              <span className="italic">Luxury Renewed</span>
             </span>
           </h1>
 

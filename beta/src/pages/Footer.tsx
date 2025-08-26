@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // Re-usable Social Icon component for cleaner code
 interface SocialIconProps {
@@ -23,14 +23,14 @@ const InstagramIcon = () => ( <svg className="w-5 h-5" fill="currentColor" viewB
 const TwitterIcon = () => ( <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg> );
 
 function Footer() {
-  // const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const footerRef = useRef(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          // setIsVisible(true);
+          setIsVisible(true);
           observer.unobserve(entry.target);
         }
       },
@@ -41,8 +41,8 @@ function Footer() {
     return () => { if (footerRef.current) observer.unobserve(footerRef.current); };
   }, []);
 
-  // const getAnimClass = (delay: number) => 
-  //   `transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`;
+  const getAnimClass = (delay: number) => 
+    `transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`;
 
   return (
     <footer ref={footerRef} className="relative bg-background pt-40 -mt-50">
@@ -63,7 +63,7 @@ function Footer() {
           
           {/* Column 1: Brand & Ethos */}
           <div className="lg:col-span-4" style={{transitionDelay: '100ms'}}>
-            <div className="transition-all duration-700 ease-out opacity-100 translate-y-0">
+            <div className={getAnimClass(100)}>
               <a href="#" className="inline-block mb-6">
                 <span className="text-3xl font-cinzel tracking-widest text-text-heading">AMRITHA HERITAGE</span>
                 <p className="text-sm font-poppins tracking-[0.2em] text-text-subtle">THIRUVANANTHAPURAM</p>
@@ -76,7 +76,7 @@ function Footer() {
           
           {/* Column 2: Navigation Links */}
           <div className="lg:col-span-2" style={{transitionDelay: '200ms'}}>
-            <div className="transition-all duration-700 ease-out opacity-100 translate-y-0">
+            <div className={getAnimClass(200)}>
               <h3 className="font-playfair text-h4 text-text-heading mb-6">Explore</h3>
               <ul className="space-y-3">
                 {['Heritage', 'Rooms', 'Dining', 'Gallery'].map(link => (
@@ -90,7 +90,7 @@ function Footer() {
 
           {/* Column 3: Contact & Company Links */}
            <div className="lg:col-span-2" style={{transitionDelay: '300ms'}}>
-            <div className="transition-all duration-700 ease-out opacity-100 translate-y-0">
+            <div className={getAnimClass(300)}>
               <h3 className="font-playfair text-h4 text-text-heading mb-6">Company</h3>
               <ul className="space-y-3">
                 {['About Us', 'Events', 'Contact', 'Location'].map(link => (
@@ -104,7 +104,7 @@ function Footer() {
 
           {/* Column 4: Newsletter */}
           <div className="lg:col-span-4" style={{transitionDelay: '400ms'}}>
-            <div className="transition-all duration-700 ease-out opacity-100 translate-y-0">
+            <div className={getAnimClass(400)}>
               <h3 className="font-playfair text-h4 text-text-heading mb-6">Stay Connected</h3>
               <p className="font-cormorant text-text-subtle mb-4">Receive heritage insights and exclusive offers directly to your inbox.</p>
               <form className="flex">
