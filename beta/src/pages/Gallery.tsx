@@ -9,8 +9,8 @@ const Gallery = () => {
   const [parallaxOffset, setParallaxOffset] = useState(0);
 
   // State for the currently selected image and its index.
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [selectedImage, setSelectedImage] = useState<any>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   
   // State for modal visibility.
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,16 +51,18 @@ const Gallery = () => {
   };
 
   // Function to navigate to the next image in the filtered list.
-  const handleNext = (e) => {
+  const handleNext = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (selectedIndex === null) return;
     const nextIndex = (selectedIndex + 1) % filteredImages.length;
     setSelectedImage(filteredImages[nextIndex]);
     setSelectedIndex(nextIndex);
   };
 
   // Function to navigate to the previous image.
-  const handlePrev = (e) => {
+  const handlePrev = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (selectedIndex === null) return;
     const prevIndex = (selectedIndex - 1 + filteredImages.length) % filteredImages.length;
     setSelectedImage(filteredImages[prevIndex]);
     setSelectedIndex(prevIndex);
@@ -139,7 +141,7 @@ const Gallery = () => {
                 src={image.url} 
                 alt={image.alt} 
                 className="w-full h-full object-cover rounded-lg"
-                onError={(e) => { e.target.src = 'https://placehold.co/800x600/DCD7C9/5A594D?text=Image+Unavailable'; }}
+                onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/800x600/DCD7C9/5A594D?text=Image+Unavailable'; }}
               />
               {/* Overlay with a transparent gradient and a descriptive text. */}
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
