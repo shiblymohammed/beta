@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import { useState, useEffect } from 'react';
 import { X as CloseIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // This is the main gallery page component.
@@ -15,7 +16,7 @@ const Gallery = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // State for the active filter category.
-  const [activeFilter, setActiveFilter] = useState('All');
+  const [activeFilter, _setActiveFilter] = useState('All');
 
   // Array of image data for the gallery, with added categories.
   // Using working image URLs for a more dynamic and realistic look.
@@ -35,8 +36,7 @@ const Gallery = () => {
   // Placeholder URL for the hero background image.
   const heroImage = "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80";
 
-  // Derive a list of unique categories for the filter buttons.
-  const categories = ['All', ...new Set(allImages.map(img => img.category))];
+
 
   // Filter images based on the active category.
   const filteredImages = activeFilter === 'All'
@@ -44,7 +44,7 @@ const Gallery = () => {
     : allImages.filter(img => img.category === activeFilter);
 
   // Function to open the modal with a specific image and its index.
-  const handleImageClick = (image, index) => {
+  const handleImageClick = (image: any, index: number) => {
     setSelectedImage(image);
     setSelectedIndex(index);
     setIsModalOpen(true);

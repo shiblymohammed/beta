@@ -41,7 +41,7 @@ function Footer() {
     return () => { if (footerRef.current) observer.unobserve(footerRef.current); };
   }, []);
 
-  const getAnimClass = (delay: number) => 
+  const getAnimClass = (_delay: number) => 
     `transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`;
 
   return (

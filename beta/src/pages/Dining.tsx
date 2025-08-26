@@ -58,11 +58,7 @@ interface MenuItem {
   }[];
 }
 
-interface MenuCategory {
-  category: string;
-  image: string;
-  items: MenuItem[];
-}
+
 
 
 
@@ -229,16 +225,16 @@ const HeroSection: React.FC = () => {
               transition={{ duration: 0.3 }}
             />
                 </motion.button>
-        </motion.div>
+    </motion.div>
             </div>
     </section>
-  );
+);
 };
 
 const IntroSection: React.FC = () => {
   const stats = getMenuStatistics();
-  
-  return (
+
+    return (
     <section className="py-24 bg-background relative overflow-hidden">
       {/* Decorative Background Elements */}
       <motion.div
@@ -326,11 +322,11 @@ const IntroSection: React.FC = () => {
                   {stat.value}
                 </motion.div>
                 <div className="font-poppins text-sm text-text-subtle font-medium">{stat.label}</div>
-        </div>
-    </motion.div>
-          ))}
+                                            </div>
+                                        </motion.div>
+                                    ))}
         </motion.div>
-      </div>
+                                </div>
     </section>
 );
 };
@@ -427,7 +423,7 @@ const DailyMenuSection: React.FC = () => {
                     />
                     {/* Gradient Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                  </div>
+                            </div>
 
                   {/* Content Overlay */}
                   <div className="absolute inset-0 flex items-end p-12">
@@ -478,12 +474,12 @@ const DailyMenuSection: React.FC = () => {
                       >
                         <div className="text-white">
                           <PriceDisplay price={item.price} />
-                        </div>
+                                </div>
                         <OrderButton item={item} />
                       </motion.div>
-                    </div>
-                  </div>
-                </div>
+                                </div>
+                                    </div>
+                                </div>
               ))}
             </motion.div>
 
@@ -505,11 +501,11 @@ const DailyMenuSection: React.FC = () => {
             >
               <ChevronRight className="w-6 h-6" />
             </motion.button>
-          </div>
+                            </div>
 
 
-        </div>
-      </div>
+                        </div>
+                    </div>
     </section>
   );
 };
@@ -1076,7 +1072,7 @@ const GallerySection: React.FC = () => {
     }
   ];
 
-  return (
+    return (
     <section className="min-h-screen bg-gradient-to-br from-background via-background-secondary to-background relative overflow-hidden">
       {/* Decorative Background Elements */}
       <motion.div
@@ -1089,7 +1085,7 @@ const GallerySection: React.FC = () => {
         <div className="absolute top-40 right-20 w-32 h-32 border border-action-accent rounded-full" />
         <div className="absolute bottom-32 left-1/4 w-24 h-24 border border-action-accent rounded-full" />
         <div className="absolute top-1/2 right-1/3 w-20 h-20 border border-action-accent rounded-full" />
-      </motion.div>
+                </motion.div>
 
       <div className="w-full px-4 py-32 relative z-10">
         <motion.div 
@@ -1107,7 +1103,7 @@ const GallerySection: React.FC = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <Sparkles className="w-10 h-10 text-action-accent mx-auto" />
-          </motion.div>
+                    </motion.div>
           
           <h2 className="font-playfair text-h1-sm sm:text-h1 text-text-heading mb-6">
             A Feast for the Eyes
@@ -1118,7 +1114,7 @@ const GallerySection: React.FC = () => {
         </motion.div>
 
         {/* Main Gallery Grid - Full Width Sophisticated Layout */}
-        <motion.div 
+                            <motion.div
           className="w-full px-0 mb-16"
           variants={containerVariants}
           initial="hidden"
@@ -1174,8 +1170,8 @@ const GallerySection: React.FC = () => {
                     </motion.span>
                     <h3 className="font-playfair text-2xl font-semibold mb-3">{item.alt}</h3>
                     <p className="font-cormorant text-lg opacity-90">{item.description}</p>
-                  </div>
-                </motion.div>
+                                </div>
+                            </motion.div>
               </motion.div>
             ))}
           </motion.div>
@@ -1203,7 +1199,7 @@ const GallerySection: React.FC = () => {
                     whileHover={{ scale: 1.1 }}
                     transition={{ duration: 0.8 }}
                   />
-                </div>
+                        </div>
                 
                 {/* Gradient Overlay */}
                 <motion.div
@@ -1229,7 +1225,7 @@ const GallerySection: React.FC = () => {
                     </motion.span>
                     <h3 className="font-playfair text-lg font-semibold mb-2">{item.alt}</h3>
                     <p className="font-cormorant text-sm opacity-90">{item.description}</p>
-                  </div>
+                        </div>
                 </motion.div>
               </motion.div>
             ))}
@@ -1258,7 +1254,7 @@ const GallerySection: React.FC = () => {
                     whileHover={{ scale: 1.15 }}
                     transition={{ duration: 0.8 }}
                   />
-                </div>
+                    </div>
                 
                 {/* Gradient Overlay */}
                 <motion.div
@@ -1285,8 +1281,8 @@ const GallerySection: React.FC = () => {
                     <h3 className="font-playfair text-sm font-semibold mb-1">{item.alt}</h3>
                     <p className="font-cormorant text-xs opacity-90 line-clamp-2">{item.description}</p>
                   </div>
-                </motion.div>
-              </motion.div>
+                    </motion.div>
+                    </motion.div>
             ))}
           </motion.div>
 
@@ -1343,9 +1339,9 @@ const GallerySection: React.FC = () => {
                     </motion.span>
                     <h3 className="font-playfair text-lg font-semibold mb-2">{item.alt}</h3>
                     <p className="font-cormorant text-sm opacity-90">{item.description}</p>
-                  </div>
-                </motion.div>
-              </motion.div>
+                        </div>
+                    </motion.div>
+                    </motion.div>
             ))}
           </motion.div>
         </motion.div>
@@ -1378,8 +1374,8 @@ const GallerySection: React.FC = () => {
             />
           </motion.button>
         </motion.div>
-      </div>
-    </section>
+                    </div>
+                </section>
   );
 };
 
@@ -1400,7 +1396,7 @@ const ContactSection: React.FC = () => {
           <p className="font-cormorant text-body text-text-subtle max-w-2xl mx-auto">
             Experience the magic of heritage dining in the heart of Thiruvananthapuram.
           </p>
-        </motion.div>
+                    </motion.div>
 
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-3 gap-8"
@@ -1495,8 +1491,8 @@ const Dining: React.FC = () => {
       <TestimonialsSection />
       <GallerySection />
       <ContactSection />
-    </div>
-  );
+        </div>
+    );
 };
 
 export default Dining;

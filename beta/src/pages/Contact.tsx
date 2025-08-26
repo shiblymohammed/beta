@@ -48,14 +48,11 @@ const Contact = () => {
     return () => { if (sectionRef.current) observer.unobserve(sectionRef.current); };
   }, []);
 
-  const getAnimClass = (delay: number) =>
+  const getAnimClass = (_delay: number) =>
     `transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`;
   
   // --- Handlers ---
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

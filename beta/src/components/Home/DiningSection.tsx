@@ -22,12 +22,7 @@ interface Dish {
   image: string;
 }
 
-interface GalleryImage {
-  id: number;
-  src: string;
-  label: string;
-  span: string; // For grid layout
-}
+
 
 // =================================================================
 // == HELPER COMPONENTS
@@ -104,12 +99,6 @@ const DiningSection: React.FC = () => {
     { id: 3, name: "Beef Ularthiyathu", description: "Slow-roasted beef with fried coconut slivers.", price: "₹450", image: "./images/Dining/beefularthiyathu.jpg" },
     { id: 4, name: "Meen Pollichathu", description: "Spiced fish wrapped in banana leaf and pan-fried.", price: "₹520", image: "./images/Dining/meenpollichathu.jpg" },
     { id: 5, name: "Prawn Mango Curry", description: "A coastal curry balancing sweet and tangy flavors.", price: "₹480", image: "./images/Dining/prawnmango.jpg" },
-  ];
-
-  const galleryImages: GalleryImage[] = [
-    { id: 1, src: "./images/Dining/hall2.jpg", label: "The Grand Dining Hall", span: "lg:col-span-2 lg:row-span-2" },
-    { id: 2, src: "./images/Dining/varanda1.jpg", label: "The Heritage Kitchen", span: "" },
-    { id: 3, src: "./images/Dining/SAJAN-9.webp", label: "The Garden Veranda", span: "" },
   ];
 
   useEffect(() => {
