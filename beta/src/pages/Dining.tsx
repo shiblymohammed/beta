@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
-import { PlusCircle, Star, ChevronLeft, ChevronRight, Clock, Users, MapPin, Phone, Mail, Sparkles, ChefHat, Utensils, Wine } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { Star, ChevronLeft, ChevronRight, Clock, MapPin, Phone, Sparkles, ChefHat, Utensils, Wine } from 'lucide-react';
 import { menuData, getRandomFeaturedItems, getMenuStatistics } from '../components/menuData';
 
 // =================================================================
@@ -31,23 +31,7 @@ const itemVariants = {
   }
 };
 
-const cardHoverVariants = {
-  rest: { 
-    scale: 1,
-    rotateY: 0,
-    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
-  },
-  hover: { 
-    scale: 1.05,
-    rotateY: 5,
-    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-    transition: {
-      type: "spring",
-      stiffness: 300,
-      damping: 20
-    }
-  }
-};
+
 
 const floatingVariants = {
   float: {
@@ -80,18 +64,13 @@ interface MenuCategory {
   items: MenuItem[];
 }
 
-interface MenuCollection {
-  collection: string;
-  description: string;
-  icon: string;
-  categories: MenuCategory[];
-}
+
 
 // =================================================================
 // == HELPER COMPONENTS
 // =================================================================
 
-const OrderButton: React.FC<{ item: MenuItem }> = ({ item }) => (
+const OrderButton: React.FC<{ item: MenuItem }> = ({ item: _item }) => (
   <motion.button 
     className="px-6 py-3 bg-action-accent text-text-on-color font-poppins font-semibold rounded-full shadow-heritage hover:shadow-heritage-lg transition-all duration-300 relative overflow-hidden group"
     whileHover={{ 
@@ -380,9 +359,7 @@ const DailyMenuSection: React.FC = () => {
     );
   };
 
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-  };
+
 
   return (
     <section className="py-24 bg-background-secondary relative overflow-hidden">
@@ -1436,7 +1413,7 @@ const ContactSection: React.FC = () => {
             { icon: MapPin, title: 'Location', content: 'Amritha Heritage, Thiruvananthapuram, Kerala', delay: 0.1 },
             { icon: Clock, title: 'Hours', content: 'Lunch: 12:00 PM - 3:00 PM\nDinner: 7:00 PM - 11:00 PM', delay: 0.2 },
             { icon: Phone, title: 'Contact', content: '+91 98765 43210\ninfo@kohinoor.com', delay: 0.3 }
-          ].map((item, index) => (
+          ].map((item) => (
             <motion.div 
               key={item.title}
               className="text-center p-8 bg-background rounded-2xl shadow-heritage hover:shadow-heritage-lg transition-all duration-300 relative overflow-hidden group"
