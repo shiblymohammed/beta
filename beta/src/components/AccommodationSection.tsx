@@ -182,52 +182,46 @@ const AccommodationSection: React.FC = () => {
   const facilities: Facility[] = [
     { 
       icon: WifiIcon, 
-      title: "High-Speed Wi-Fi", 
-      description: "Seamlessly stay connected with our complimentary fiber-optic internet access throughout the entire property.",
-      highlight: "Complimentary"
+      title: "Air-conditioned", 
+      description: "Climate-controlled comfort for your perfect stay.",
+      highlight: "Climate Control"
     },
     { 
       icon: SpaIcon, 
-      title: "Heritage Spa", 
-      description: "Rejuvenate with traditional Ayurvedic therapies and modern wellness treatments in our serene spa sanctuary.",
-      highlight: "Ayurvedic"
+      title: "Complimentary Breakfast", 
+      description: "Start your day with our delicious morning spread.",
+      highlight: "Complimentary"
     },
     { 
       icon: PoolIcon, 
-      title: "Infinity Pool", 
-      description: "Unwind in our stunning infinity pool with panoramic views, featuring a swim-up bar and poolside cabanas.",
-      highlight: "Infinity Edge"
+      title: "Free Wi-Fi", 
+      description: "Stay connected with high-speed internet access.",
+      highlight: "Free Access"
     },
     { 
       icon: ServiceIcon, 
-      title: "Concierge Service", 
-      description: "Our dedicated heritage concierge team is available 24/7 to curate personalized experiences and assist with every detail.",
-      highlight: "24/7 Available"
+      title: "Mini Bar", 
+      description: "Refreshments and snacks available in your room.",
+      highlight: "In-Room"
     },
     { 
       icon: RestaurantIcon, 
-      title: "Fine Dining", 
-      description: "Experience authentic Kerala cuisine and international delicacies at our award-winning heritage restaurant.",
-      highlight: "Multi-cuisine"
+      title: "Flat-screen TV", 
+      description: "Entertainment with modern television technology.",
+      highlight: "Modern Tech"
     },
     { 
       icon: GymIcon, 
-      title: "Fitness Center", 
-      description: "Maintain your wellness routine with our state-of-the-art fitness center equipped with modern equipment.",
-      highlight: "Modern Equipment"
+      title: "Room Service", 
+      description: "24/7 service for your convenience and comfort.",
+      highlight: "24/7"
     },
     { 
       icon: TransportIcon, 
-      title: "Airport Transfer", 
-      description: "Enjoy hassle-free luxury transportation to and from the airport in our premium heritage vehicles.",
-      highlight: "Luxury Vehicles"
-    },
-    { 
-      icon: LaundryIcon, 
-      title: "Laundry Service", 
-      description: "Professional same-day laundry and dry cleaning services to keep you looking your best throughout your stay.",
-      highlight: "Same Day"
-    },
+      title: "Colonial Type Heritage Rooms", 
+      description: "Experience authentic colonial architecture and charm.",
+      highlight: "Heritage"
+    }
   ];
 
   // Enhanced effect for loading Swiper and setting up observers
@@ -321,12 +315,12 @@ const AccommodationSection: React.FC = () => {
               Heritage Accommodations
             </p>
             <h2 className="text-h2 font-playfair text-text-heading mb-6 relative">
-              Where History Meets Luxury
+            Stay in Colonial Elegance
               <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-0.5 bg-gradient-to-r from-transparent via-action-accent to-transparent"></div>
             </h2>
           </div>
           <p className="text-lg font-cormorant text-text-subtle max-w-3xl mx-auto leading-relaxed">
-            Each room is a carefully curated journey through time, where colonial elegance meets contemporary comfort in the heart of Kerala's historic landscape.
+          Our rooms are more than just places to sleep —they are a journey into history. Each room is uniquely designed with period furniture, natural lighting, and modern amenities
           </p>
         </div>
 
@@ -551,7 +545,7 @@ const AccommodationSection: React.FC = () => {
             </p>
           </div>
 
-                     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
+                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4 md:gap-6">
             {facilities.map((facility, index) => (
                              <div 
                  key={index} 
@@ -704,6 +698,8 @@ const AccommodationSection: React.FC = () => {
          }
          
        `}</style>
+
+       
     </section>
   );
 };

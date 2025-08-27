@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Star, ChevronLeft, ChevronRight, Clock, MapPin, Phone, Sparkles, ChefHat, Utensils, Wine } from 'lucide-react';
+import { Star, Clock, MapPin, Phone, Sparkles, ChefHat, Utensils, Wine } from 'lucide-react';
 import { menuData, getRandomFeaturedItems, getMenuStatistics } from '../components/menuData';
 
 // =================================================================
@@ -111,7 +111,7 @@ const PriceDisplay: React.FC<{ price: number | string }> = ({ price }) => {
 // =================================================================
 
 const HeroSection: React.FC = () => {
-  const targetRef = useRef<HTMLDivElement>(null);
+  const targetRef = React.useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: targetRef,
     offset: ['start start', 'end start'],
@@ -333,29 +333,6 @@ const IntroSection: React.FC = () => {
 
 const DailyMenuSection: React.FC = () => {
   const featuredItems = useMemo(() => getRandomFeaturedItems(6), []);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll effect
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % featuredItems.length);
-    }, 4000); // Change slide every 4 seconds
-
-    return () => clearInterval(interval);
-  }, [featuredItems.length]);
-
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % featuredItems.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? featuredItems.length - 1 : prevIndex - 1
-    );
-  };
-
-
 
   return (
     <section className="py-24 bg-background-secondary relative overflow-hidden">
@@ -397,115 +374,109 @@ const DailyMenuSection: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* Carousel Container */}
-        <div className="relative">
-          {/* Main Carousel */}
-          <div className="relative h-[500px] overflow-hidden rounded-3xl">
+        {/* Cards Grid */}
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
+          {featuredItems.map((item, index) => (
             <motion.div
-              ref={containerRef}
-              className="flex h-full transition-transform duration-700 ease-out"
-              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+              key={item.name + index}
+              className="group relative bg-white rounded-2xl overflow-hidden shadow-heritage hover:shadow-heritage-lg transition-all duration-500 transform hover:-translate-y-2"
+              variants={itemVariants}
+              whileHover={{ 
+                scale: 1.02,
+                rotateY: [0, 2, -2, 0],
+                transition: { duration: 0.3 }
+              }}
             >
-              {featuredItems.map((item, index) => (
-                <div
-                  key={item.name + index}
-                  className="min-w-full h-full relative group"
+              {/* Image Container */}
+              <div className="relative h-64 overflow-hidden">
+                <motion.img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  initial={{ scale: 1.1 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.8 }}
+                />
+                
+                {/* Special Badge */}
+                <motion.div 
+                  className="absolute top-4 left-4"
+                  initial={{ opacity: 0, scale: 0 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  {/* Background Image */}
-                  <div className="absolute inset-0">
-                    <motion.img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                      initial={{ scale: 1.1 }}
-                      animate={{ scale: 1 }}
-                      transition={{ duration: 0.8 }}
-                    />
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                            </div>
+                  <span className="bg-action-accent text-white px-3 py-1.5 rounded-full text-xs font-poppins font-semibold shadow-lg flex items-center gap-1.5">
+                    <Sparkles className="w-3 h-3" />
+                    Special
+                  </span>
+                </motion.div>
 
-                  {/* Content Overlay */}
-                  <div className="absolute inset-0 flex items-end p-12">
-                    <div className="max-w-2xl">
-                      <motion.div 
-                        className="inline-block mb-4"
-                        initial={{ opacity: 0, scale: 0 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.2 }}
-                      >
-                        <span className="bg-action-accent text-white px-4 py-2 rounded-full text-sm font-poppins font-semibold shadow-lg">
-                          <span className="flex items-center gap-2">
-                            <Sparkles className="w-4 h-4" />
-                            Today's Special
-                          </span>
-                        </span>
-                      </motion.div>
-                      
-                      <motion.h3 
-                        className="font-playfair text-h1 text-white mb-4 line-clamp-2"
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: 0.3 }}
-                      >
-                        {item.name}
-                      </motion.h3>
-                      
-                      {item.description && (
-                        <motion.p 
-                          className="font-cormorant text-lg text-white/90 mb-6 line-clamp-3"
-                          initial={{ opacity: 0, y: 20 }}
-                          whileInView={{ opacity: 1, y: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.6, delay: 0.4 }}
-                        >
-                          {item.description}
-                        </motion.p>
-                      )}
-                      
-                      <motion.div 
-                        className="flex flex-col sm:flex-row gap-4 items-start sm:items-center"
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: 0.5 }}
-                      >
-                        <div className="text-white">
-                          <PriceDisplay price={item.price} />
-                                </div>
-                        <OrderButton item={item} />
-                      </motion.div>
-                                </div>
-                                    </div>
-                                </div>
-              ))}
+                {/* Price Badge */}
+                <motion.div 
+                  className="absolute top-4 right-4"
+                  initial={{ opacity: 0, scale: 0 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 + 0.1 }}
+                >
+                  <span className="bg-background/90 backdrop-blur-sm text-action-accent px-3 py-1.5 rounded-full text-sm font-poppins font-bold shadow-lg">
+                    ₹{typeof item.price === 'string' ? item.price.split('/')[0] : item.price}
+                  </span>
+                </motion.div>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 bg-gradient-to-br from-background to-background-secondary">
+                <motion.h3 
+                  className="font-playfair text-xl text-text-heading mb-3 line-clamp-2 group-hover:text-action-accent transition-colors duration-300"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 + 0.2 }}
+                >
+                  {item.name}
+                </motion.h3>
+                
+                {item.description && (
+                  <motion.p 
+                    className="font-cormorant text-text-subtle mb-4 line-clamp-3 leading-relaxed"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: index * 0.1 + 0.3 }}
+                  >
+                    {item.description}
+                  </motion.p>
+                )}
+
+                {/* Price and Order Button */}
+                <motion.div 
+                  className="flex items-center justify-between"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 + 0.4 }}
+                >
+                  <div className="text-action-accent font-poppins font-bold text-lg">
+                    <PriceDisplay price={item.price} />
+                  </div>
+                  <OrderButton item={item} />
+                </motion.div>
+              </div>
+
+              {/* Hover Border Effect */}
+              <div className="absolute inset-0 rounded-2xl border-2 border-action-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
             </motion.div>
-
-            {/* Navigation Arrows */}
-            <motion.button
-              onClick={prevSlide}
-              className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-white/30 transition-all duration-300 group"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </motion.button>
-            
-            <motion.button
-              onClick={nextSlide}
-              className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-white/30 transition-all duration-300 group"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <ChevronRight className="w-6 h-6" />
-            </motion.button>
-                            </div>
-
-
-                        </div>
-                    </div>
+          ))}
+        </motion.div>
+      </div>
     </section>
   );
 };
